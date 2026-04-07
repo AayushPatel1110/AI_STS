@@ -1,23 +1,21 @@
-import { Card, CardContent } from '@/components/ui/card'
+import { axiosInstance } from '@/lib/axios';
 import { useUser } from '@clerk/clerk-react';
 import { Loader } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 const AuthCallbackPage = () => {
 
-  const { isLoaded , user } = useUser();
+  const { isLoaded, user } = useUser();
   const navigate = useNavigate();
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000/api';
-  
-  useEffect  (() => {
 
-    if(!isLoaded || !user) return;  
+  useEffect(() => {
+
+    if (!isLoaded || !user) return;
 
     const syncUser = async () => {
       try {
-        await axios.post(`${backendUrl}/auth/callback`, {
+        await axiosInstance.post('auth/callback', {
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -25,12 +23,12 @@ const AuthCallbackPage = () => {
         });
 
       } catch (error) {
-          console.error("Error in auth callback", error);
+        console.error("Error in auth callback", error);
       } finally {
         navigate('/');
       }
-  };
-  syncUser();
+    };
+    syncUser();
   }, [isLoaded, user, navigate]);
 
 

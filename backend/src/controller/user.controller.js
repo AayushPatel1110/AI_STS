@@ -23,3 +23,23 @@ export const createUser = async (req, res) => {
   }
 };
 
+export const getUserProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Try clerkId first
+    let user = await User.findOne({ clerkId: id });
+    
+    // If not found, try MongoDB ObjectId
+    if (!user && id.match(/^[0-9a-fA-F]{24}$/)) {
+      user = await User.findById(id);
+    }
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

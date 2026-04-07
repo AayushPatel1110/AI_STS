@@ -9,6 +9,10 @@ const ticketSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    code: {
+        type: String,
+        default: "",
+    },
     status: {
         type: String,
         required: true,
@@ -24,7 +28,12 @@ const ticketSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    likes: [
+        {
+            type: String,
+        }
+    ],
 }, { timestamps: true }
 );
 
-export const ticket = mongoose.model("Ticket", ticketSchema);
+export const Ticket = mongoose.model("Ticket", ticketSchema);

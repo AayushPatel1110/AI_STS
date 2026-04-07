@@ -1,53 +1,73 @@
-import {  LayoutDashboardIcon } from 'lucide-react';
-import React from 'react'
-import SignInOAuthButton from './SignInOAuthButton';
+import React from 'react';
+import { Search, LayoutDashboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton } from '@clerk/clerk-react';
-import { SignOutButton } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 import { Button } from './ui/button';
+import { Input } from './ui/input';
 
-
-const isAdmin = false; // Replace with actual logic to determine if the user is an admin
-
+const isAdmin = false; // Replace with actual logic
 
 const TopBar = () => {
   return (
-    <div className='flex items-center justify-between p-4 sticky top-0 bg-zinc-900/75 
-         backdrop-blur-md z-10
-        '>
-      <div className='flex gap-2 items-center'>
-        <b className='text-2xl font-bold'>Support Ticket System</b>
-      </div>
-      <div className='flex items-center gap-4'>
-          {isAdmin &&(
-            <Link to={"/admin"}>Admin
-            <LayoutDashboardIcon className='size-5 mr-2' />
-            Admin Dashboard
+    <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
+      <div className="flex h-16 items-center justify-between px-6 gap-4">
+        {/* Brand */}
+        <Link to="/" className="flex items-center gap-2">
+          <h1 className="text-2xl font-black italic tracking-tighter text-primary select-none">
+            StackX
+          </h1>
+        </Link>
+
+        {/* Search (Twitter Style) */}
+        <div className="flex-1 max-w-md hidden md:block">
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 group-focus-within:text-primary transition-colors" />
+            <Input
+              placeholder="Search issues, tags, or users..."
+              className="pl-10 bg-white/5 border-border/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 rounded-full transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Auth & Actions */}
+        <div className="flex items-center gap-4">
+          {isAdmin && (
+            <Link to="/admin" className="hidden sm:flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
+              <LayoutDashboard className="w-4 h-4" />
+              Dashboard
             </Link>
           )}
 
           <SignedIn>
-                <div className='border text-1xl font-bold  p-2 bg-zinc-800 rounded-md '>
-                  <SignOutButton />
-                </div>
+            <div className="flex items-center gap-4">
+              <UserButton afterSignOutUrl="/"
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "w-9 h-9 border border-primary/50"
+                  }
+                }}
+              />
+            </div>
           </SignedIn>
 
           <SignedOut>
-              <SignInButton>
-                <Button variant='secondary' className='text-white border-zinc-200 h-11'>
-                  Sign In with Email
+            <div className="flex items-center gap-2">
+              <SignInButton mode="modal">
+                <Button variant="ghost" className="text-foreground/70 hover:text-primary hover:bg-primary/10 font-bold">
+                  Log in
                 </Button>
-              </SignInButton>  
-
-            {/* //Google OAuth Sign In Button */}
-            <div className="max-w-50 overflow-hidden">
-              <SignInOAuthButton /> 
+              </SignInButton>
+              <SignInButton mode="modal">
+                <Button className="bg-primary hover:bg-primary/90 text-white rounded-full font-bold px-6">
+                  Join
+                </Button>
+              </SignInButton>
             </div>
-
           </SignedOut>
+        </div>
       </div>
-    </div>
-  )
-}
+    </header>
+  );
+};
 
-export default TopBar
+export default TopBar;
