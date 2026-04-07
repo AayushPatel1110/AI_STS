@@ -42,8 +42,6 @@ const ProfilePage = () => {
   } : null);
 
 
-  console.log("Profile Posts:", displayUser?.fullname);
-
   const displayName = displayUser?.fullname || displayUser?.username;
 
   if (!isLoaded || (loadingProfile && !userProfile) || (id && !isOwnProfile && loadingProfile)) return (
@@ -115,7 +113,7 @@ const ProfilePage = () => {
               </div>
             ) : profilePosts.length > 0 ? (
               profilePosts.map((post, idx) => (
-                <PostCard key={post._id || `post-${idx}`} post={post} fullname={displayUser?.fullname} imageUrl={displayUser?.imageUrl} />
+                <PostCard key={post._id || `post-${idx}`} post={post} />
               ))
             ) : (
               <div className="p-12 text-center text-foreground/40 font-medium italic">

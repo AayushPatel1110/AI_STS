@@ -7,7 +7,7 @@ import { Card, CardContent } from './ui/card';
 import { usePostStore } from '@/store/usePostStore';
 import { useUser } from '@clerk/clerk-react';
 
-const PostCard = ({ post, imageUrl, fullname }) => {
+const PostCard = ({ post }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { toggleLike } = usePostStore();
   const { user: currentUser } = useUser();
@@ -20,14 +20,13 @@ const PostCard = ({ post, imageUrl, fullname }) => {
         {/* Avatar Area */}
         <div className="flex flex-col items-center">
           <Avatar className="w-12 h-12 border border-primary/20">
-            <AvatarImage src={imageUrl || post.userId?.imageUrl} />
+            <AvatarImage src={post.userId?.imageUrl} />
             <AvatarFallback>{post.userId?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="w-[2px] flex-grow bg-border/30 my-2 rounded-full" />
         </div>
 
         {/* Content Area */}
-        {console.log(post.userId?.clerkId || post.userId?._id)}
         <div className="flex-1 flex flex-col gap-2">
           {/* Header */}
           <div className="flex justify-between items-start">
@@ -37,7 +36,7 @@ const PostCard = ({ post, imageUrl, fullname }) => {
                   to={`/profile/${post.userId?.clerkId || post.userId?._id}`}
                   className="font-bold text-foreground hover:underline cursor-pointer"
                 >
-                  {post.userId?.fullname || fullname}
+                  {post.userId?.fullname}
                 </Link>
                 {post.status === 'closed' && (
                   <CheckCircle2 className="w-4 h-4 text-secondary" />
