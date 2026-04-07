@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { usePostStore } from '@/store/usePostStore';
 import { useUser } from '@clerk/clerk-react';
+import { formatRelativeTime } from '@/lib/utils';
 
 const PostCard = ({ post }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -34,14 +35,14 @@ const PostCard = ({ post }) => {
               <div className="flex items-center gap-1.5">
                 <Link
                   to={`/profile/${post.userId?.clerkId || post.userId?._id}`}
-                  className="font-bold text-foreground hover:underline cursor-pointer"
+                  className="font-bold text-md text-foreground hover:underline cursor-pointer"
                 >
                   {post.userId?.fullname}
                 </Link>
                 {post.status === 'closed' && (
                   <CheckCircle2 className="w-4 h-4 text-secondary" />
                 )}
-                <span className="text-foreground/40 text-sm">· {new Date(post.createdAt).toLocaleDateString()}</span>
+                <span className="text-foreground/40 text-lg">· {formatRelativeTime(post.createdAt)}</span>
               </div>
               <h3 className="text-lg font-bold text-primary leading-tight mt-1">{post.title}</h3>
             </div>
