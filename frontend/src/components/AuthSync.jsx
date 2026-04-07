@@ -1,26 +1,36 @@
 import { useAuth } from "@clerk/clerk-react";
 import { useEffect } from "react";
-import { setAuthToken } from "../lib/axios";
+import { setAuthToken, axiosInstance } from "../lib/axios";
 
 const AuthSync = () => {
   const { getToken, userId } = useAuth();
 
   useEffect(() => {
-    const syncToken = async () => {
-      if (userId) {
+    if (!userId) {
+      setAuthToken(null);
+      return;
+    }
+
+    // Create an interceptor that refreshes the token on every request
+    const interceptor = axiosInstance.interceptors.request.use(
+      async (config) => {
         try {
           const token = await getToken();
-          console.log("TOKEN,", token)
-          setAuthToken(token);
-        } catch (err) {
-          console.error("Error syncing auth token:", err);
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
+        } catch (error) {
+          console.error("Failed to refresh Clerk token:", error);
         }
-      } else {
-        setAuthToken(null);
-      }
-    };
+        return config;
+      },
+      (error) => Promise.reject(error)
+    );
 
-    syncToken();
+    // Cleanup interceptor on unmount
+    return () => {
+      axiosInstance.interceptors.request.eject(interceptor);
+    };
   }, [userId, getToken]);
 
   return null;
