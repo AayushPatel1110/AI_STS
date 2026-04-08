@@ -26,10 +26,12 @@ const ProfilePage = () => {
   const [editUsername, setEditUsername] = useState("");
   const [editBio, setEditBio] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   const handleEditProfileOpen = () => {
     setEditUsername(displayUser?.username || "");
     setEditBio(displayUser?.bio || "");
+    setValidationError("");
     setIsEditDialogOpen(true);
   };
 
@@ -40,6 +42,7 @@ const ProfilePage = () => {
       setIsEditDialogOpen(false);
       getUserProfile(displayUser?.clerkId || currentUser.id); // Refresh
     } catch (e) {
+      setValidationError(e.response?.data?.message || "Failed to update profile");
       console.error(e);
     } finally {
       setIsSaving(false);
@@ -134,8 +137,15 @@ const ProfilePage = () => {
                         <Input
                           id="username"
                           value={editUsername}
-                          onChange={(e) => setEditUsername(e.target.value)}
+                          onChange={(e) => {
+                            setEditUsername(e.target.value);
+                            if (validationError) setValidationError("");
+                          }}
+                          className={validationError ? "border-red-500 focus-visible:ring-red-500" : ""}
                         />
+                        {validationError && (
+                          <span className="text-red-500 text-xs font-semibold">{validationError}</span>
+                        )}
                       </div>
                       <div className="grid gap-2">
                         <label htmlFor="bio" className="text-sm font-medium">Bio</label>
