@@ -1,9 +1,9 @@
 import React from 'react';
 import { Search, LayoutDashboard } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
-import { Button } from './ui/button';
+import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { Input } from './ui/input';
+import SignInOAuthButton from './SignInOAuthButton';
 
 const isAdmin = false; // Replace with actual logic
 
@@ -52,16 +52,7 @@ const TopBar = () => {
 
           <SignedOut>
             <div className="flex items-center gap-2">
-              <SignInButton mode="modal">
-                <Button variant="ghost" className="text-foreground/70 hover:text-primary hover:bg-primary/10 font-bold">
-                  Log in
-                </Button>
-              </SignInButton>
-              <SignInButton mode="modal">
-                <Button className="bg-primary hover:bg-primary/90 text-white rounded-full font-bold px-6">
-                  Join
-                </Button>
-              </SignInButton>
+              <SignInOAuthButton />
             </div>
           </SignedOut>
         </div>
