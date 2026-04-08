@@ -4,6 +4,8 @@ import TopBar from '@/components/TopBar';
 import { Calendar, Link as LinkIcon, MapPin, Edit3, Loader2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useUser } from '@clerk/clerk-react';
 import { usePostStore } from '@/store/usePostStore';
 import PostCard from '@/components/PostCard';
@@ -16,9 +18,33 @@ const ProfilePage = () => {
   const { id } = useParams();
   const { user: currentUser, isLoaded } = useUser();
   const { getProfilePosts, profilePosts, loading: loadingPosts } = usePostStore();
-  const { getUserProfile, userProfile, loading: loadingProfile } = useUserStore();
+  const { getUserProfile, userProfile, loading: loadingProfile, updateUserProfile } = useUserStore();
 
   const isOwnProfile = !id || id === currentUser?.id;
+
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editUsername, setEditUsername] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleEditProfileOpen = () => {
+    setEditUsername(displayUser?.username || "");
+    setEditBio(displayUser?.bio || "");
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setIsSaving(true);
+      await updateUserProfile(displayUser?.clerkId || currentUser.id, { username: editUsername, bio: editBio });
+      setIsEditDialogOpen(false);
+      getUserProfile(displayUser?.clerkId || currentUser.id); // Refresh
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   useEffect(() => {
     const targetUserId = id || currentUser?.id;
@@ -38,7 +64,9 @@ const ProfilePage = () => {
     imageUrl: currentUser?.imageUrl,
     username: currentUser?.username || currentUser?.firstName?.toLowerCase() || "user",
     createdAt: currentUser?.createdAt,
-    clerkId: currentUser?.id
+    clerkId: currentUser?.id,
+    role: userProfile?.role,
+    bio: userProfile?.bio
   } : null);
 
 
@@ -78,19 +106,60 @@ const ProfilePage = () => {
           <div className="pt-20 px-6 pb-6 flex flex-col gap-4 border-b border-border/50">
             <div className="flex justify-between items-start">
               <div>
-                <h1 className="text-3xl font-extrabold tracking-tight text-white mb-1">{displayUser?.fullname}</h1>
+                <h1 className="text-3xl font-extrabold tracking-tight text-white mb-1 flex items-center gap-3">
+                  {displayUser?.fullname}
+                  {displayUser?.role === 'developer' && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/20 text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] border border-primary/50 relative overflow-hidden">
+                      Developer
+                    </span>
+                  )}
+                </h1>
                 <p className="text-foreground/50 text-lg">@{displayUser?.username || displayName.split(' ')[0].toLowerCase()}</p>
               </div>
               {isOwnProfile && (
-                <Button variant="outline" className="rounded-full border-primary/50 text-primary hover:bg-primary/10">
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
+                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="outline" className="rounded-full border-primary/50 text-primary hover:bg-primary/10" onClick={handleEditProfileOpen}>
+                      <Edit3 className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Edit Profile</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <label htmlFor="username" className="text-sm font-medium ">Username</label>
+                        <Input
+                          id="username"
+                          value={editUsername}
+                          onChange={(e) => setEditUsername(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <label htmlFor="bio" className="text-sm font-medium">Bio</label>
+                        <textarea
+                          id="bio"
+                          className="flex min-h-[80px] w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                          value={editBio}
+                          onChange={(e) => setEditBio(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+                      <Button onClick={handleSaveProfile} disabled={isSaving}>
+                        {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null} Save Changes
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               )}
             </div>
 
-            <p className="text-foreground/90 max-w-xl text-lg leading-relaxed">
-              Software Developer. Building high-performance UIs and solving complex technical issues at STS.io.
+            <p className="text-foreground/90 max-w-xl text-lg leading-relaxed whitespace-pre-wrap">
+              {displayUser?.bio || "This user hasn't added a bio yet."}
             </p>
 
             <div className="flex flex-wrap gap-4 text-foreground/50 text-sm mt-2">

@@ -6,7 +6,7 @@ import { User } from "../models/user.model.js";
 export const getAllTickets = async (req, res) => {
     try {
         const tickets = await Ticket.find()
-            .populate("userId", "fullname imageUrl clerkId")
+            .populate("userId", "fullname imageUrl clerkId role username")
             .sort({ createdAt: -1 });
         res.status(200).json(tickets);
     } catch (error) {
@@ -30,7 +30,7 @@ export const createTicket = async (req, res) => {
             userId: user._id,
         });
 
-        const populatedTicket = await newTicket.populate("userId", "fullname imageUrl clerkId");
+        const populatedTicket = await newTicket.populate("userId", "fullname imageUrl clerkId role username");
         res.status(201).json(populatedTicket);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -73,7 +73,7 @@ export const getProfileTickets = async (req, res) => {
         if (!user) return res.status(404).json({ message: "User not found" });
 
         const tickets = await Ticket.find({ userId: user._id })
-            .populate("userId", "fullname imageUrl clerkId")
+            .populate("userId", "fullname imageUrl clerkId role username")
             .sort({ createdAt: -1 });
         res.status(200).json(tickets);
     } catch (error) {

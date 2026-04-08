@@ -32,17 +32,24 @@ const PostCard = ({ post }) => {
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <Link
                   to={`/profile/${post.userId?.clerkId || post.userId?._id}`}
-                  className="font-bold text-md text-foreground hover:underline cursor-pointer"
+                  className="font-bold text-md text-foreground hover:underline cursor-pointer flex items-center gap-2"
                 >
                   {post.userId?.fullname}
+
                 </Link>
+                <label htmlFor="username" className="text-sm font-medium text-gray-500">@{post.userId?.username}</label>
+                {post.userId?.role === 'developer' && (
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] border border-primary/50 relative overflow-hidden uppercase tracking-wider">
+                    Dev
+                  </span>
+                )}
                 {post.status === 'closed' && (
                   <CheckCircle2 className="w-4 h-4 text-secondary" />
                 )}
-                <span className="text-foreground/40 text-lg">· {formatRelativeTime(post.createdAt)}</span>
+                <span className="text-foreground/40 text-lg whitespace-nowrap">· {formatRelativeTime(post.createdAt)}</span>
               </div>
               <h3 className="text-lg font-bold text-primary leading-tight mt-1">{post.title}</h3>
             </div>

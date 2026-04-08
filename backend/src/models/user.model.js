@@ -9,6 +9,15 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    username: {
+        type: String,
+        unique: true,
+        sparse: true, // allows multiple null values if not set
+    },
+    bio: {
+        type: String,
+        default: "",
+    },
     clerkId: {
         type: String,
         required: true,

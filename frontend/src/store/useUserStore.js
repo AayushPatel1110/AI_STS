@@ -18,4 +18,17 @@ export const useUserStore = create((set) => ({
             return null;
         }
     },
+
+    updateUserProfile: async (id, data) => {
+        set({ loading: true, error: null });
+        try {
+            const response = await axiosInstance.put(`users/profile/${id}`, data);
+            set({ userProfile: response.data, loading: false });
+            return response.data;
+        } catch (error) {
+            console.error("Error updating user profile:", error);
+            set({ error: error.response?.data?.message || "Failed to update user profile", loading: false });
+            throw error;
+        }
+    },
 }));
