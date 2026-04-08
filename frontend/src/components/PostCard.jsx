@@ -28,7 +28,7 @@ const PostCard = ({ post }) => {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 flex flex-col gap-2">
+        <div className="flex-1 min-w-0 flex flex-col gap-2">
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
@@ -64,7 +64,7 @@ const PostCard = ({ post }) => {
 
           {/* Code Snippet (StackOverflow Feature) */}
           {post.code && (
-            <div className="mt-2 rounded-xl overflow-hidden border border-border/50 bg-[#0d0d1a] shadow-inner">
+            <div className="mt-2 w-full rounded-xl overflow-hidden border border-border/50 bg-[#0d0d1a] shadow-inner">
               <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Terminal className="w-4 h-4 text-secondary" />
@@ -79,7 +79,7 @@ const PostCard = ({ post }) => {
                 </button>
               </div>
               <div className={`transition-all duration-300 ease-in-out ${isExpanded ? 'max-height-none p-4' : 'max-h-24 p-4 grayscale-[0.5] opacity-60 overflow-hidden'}`}>
-                <pre className="text-sm font-mono  text-white leading-tight">
+                <pre className="text-sm font-mono text-white leading-tight overflow-x-auto pb-2">
                   <code>{post.code}</code>
                 </pre>
               </div>
