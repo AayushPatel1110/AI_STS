@@ -16,7 +16,7 @@ const PostCard = ({ post }) => {
   const { user: currentUser } = useUser();
   const isLiked = post.likes?.some(id => id === currentUser?.id);
   const likeCount = post.likes?.length || 0;
-  
+
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editTitle, setEditTitle] = useState(post.title);
   const [editDescription, setEditDescription] = useState(post.description);
@@ -25,12 +25,28 @@ const PostCard = ({ post }) => {
 
   const isOwner = currentUser?.id && post.userId?.clerkId && currentUser.id === post.userId.clerkId;
 
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case 'in_progress':
+        return { bg: 'bg-blue-500', shadow: 'shadow-[0_0_12px_rgba(59,130,246,0.8)]', label: 'In Progress' };
+      case 'resolved':
+        return { bg: 'bg-green-500', shadow: 'shadow-[0_0_12px_rgba(34,197,94,0.8)]', label: 'Resolved' };
+      case 'critical':
+        return { bg: 'bg-red-500', shadow: 'shadow-[0_0_12px_rgba(239,68,68,0.8)]', label: 'Critical' };
+      case 'open':
+      default:
+        return { bg: 'bg-zinc-400', shadow: 'shadow-[0_0_12px_rgba(161,161,170,0.8)]', label: 'Open' };
+    }
+  };
+
+  const statusStyle = getStatusStyles(post.status);
+
   const handleDelete = async () => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
-          await deletePost(post._id);
+        await deletePost(post._id);
       } catch (e) {
-          console.error(e);
+        console.error(e);
       }
     }
   };
@@ -38,12 +54,12 @@ const PostCard = ({ post }) => {
   const handleEditSave = async () => {
     setIsSaving(true);
     try {
-        await updatePost(post._id, { title: editTitle, description: editDescription, code: editCode });
-        setIsEditDialogOpen(false);
+      await updatePost(post._id, { title: editTitle, description: editDescription, code: editCode });
+      setIsEditDialogOpen(false);
     } catch (e) {
-        console.error(e);
+      console.error(e);
     } finally {
-        setIsSaving(false);
+      setIsSaving(false);
     }
   };
 
@@ -78,71 +94,68 @@ const PostCard = ({ post }) => {
                     Dev
                   </span>
                 )}
-                {post.status === 'closed' && (
-                  <CheckCircle2 className="w-4 h-4 text-secondary" />
-                )}
                 <span className="text-foreground/40 text-lg whitespace-nowrap">· {formatRelativeTime(post.createdAt)}</span>
               </div>
               <h3 className="text-lg font-bold text-primary leading-tight mt-1">{post.title}</h3>
             </div>
-            
+
             {isOwner ? (
-                <div className="flex items-center gap-1">
-                    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                        <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
-                                <Edit3 className="w-4 h-4" />
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px]">
-                            <DialogHeader>
-                                <DialogTitle>Edit Post</DialogTitle>
-                            </DialogHeader>
-                            <div className="grid gap-4 py-4">
-                                <div className="grid gap-2">
-                                    <label htmlFor="title" className="text-sm font-medium">Title</label>
-                                    <Input
-                                        id="title"
-                                        value={editTitle}
-                                        onChange={(e) => setEditTitle(e.target.value)}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <label htmlFor="desc" className="text-sm font-medium">Description</label>
-                                    <textarea
-                                        id="desc"
-                                        className="flex min-h-[100px] w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-                                        value={editDescription}
-                                        onChange={(e) => setEditDescription(e.target.value)}
-                                    />
-                                </div>
-                                <div className="grid gap-2">
-                                    <label htmlFor="code" className="text-sm font-medium flex items-center gap-2">
-                                        <Terminal className="w-4 h-4"/> Code Snippet
-                                    </label>
-                                    <textarea
-                                        id="code"
-                                        className="flex min-h-[120px] font-mono w-full rounded-md border border-input bg-[#0d0d1a] px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-                                        value={editCode}
-                                        onChange={(e) => setEditCode(e.target.value)}
-                                        placeholder="Optional code snippet..."
-                                    />
-                                </div>
-                            </div>
-                            <div className="flex justify-end gap-2">
-                                <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-                                <Button onClick={handleEditSave} disabled={isSaving}>Save Changes</Button>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                    <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-red-500" onClick={handleDelete}>
-                        <Trash2 className="w-4 h-4" />
+              <div className="flex items-center gap-1">
+                <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
+                      <Edit3 className="w-4 h-4" />
                     </Button>
-                </div>
-            ) : (
-                <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
-                  <Share className="w-4 h-4" />
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[500px]">
+                    <DialogHeader>
+                      <DialogTitle>Edit Post</DialogTitle>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid gap-2">
+                        <label htmlFor="title" className="text-sm font-medium">Title</label>
+                        <Input
+                          id="title"
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <label htmlFor="desc" className="text-sm font-medium">Description</label>
+                        <textarea
+                          id="desc"
+                          className="flex min-h-[100px] w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                          value={editDescription}
+                          onChange={(e) => setEditDescription(e.target.value)}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <label htmlFor="code" className="text-sm font-medium flex items-center gap-2">
+                          <Terminal className="w-4 h-4" /> Code Snippet
+                        </label>
+                        <textarea
+                          id="code"
+                          className="flex min-h-[120px] font-mono w-full rounded-md border border-input bg-[#0d0d1a] px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                          value={editCode}
+                          onChange={(e) => setEditCode(e.target.value)}
+                          placeholder="Optional code snippet..."
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+                      <Button onClick={handleEditSave} disabled={isSaving}>Save Changes</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+                <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-red-500" onClick={handleDelete}>
+                  <Trash2 className="w-4 h-4" />
                 </Button>
+              </div>
+            ) : (
+              <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
+                <Share className="w-4 h-4" />
+              </Button>
             )}
           </div>
           {/* Problem Text */}
@@ -195,11 +208,11 @@ const PostCard = ({ post }) => {
               <span className="text-sm">{likeCount}</span>
             </div>
 
-            <div className="flex items-center gap-2 group/action hover:text-primary transition-colors cursor-pointer">
-              <div className="p-2 rounded-full group-hover/action:bg-primary/10">
-                <Terminal className="w-5 h-5" />
-              </div>
-              <span className="text-sm">{post.votes || 0}</span>
+            <div className="flex items-center gap-3 pr-2 select-none">
+              <div className={`w-2.5 h-2.5 rounded-full ${statusStyle.bg} ${statusStyle.shadow} `} />
+              <span className="text-sm font-medium tracking-wide text-foreground/70 uppercase">
+                {statusStyle.label}
+              </span>
             </div>
           </div>
         </div>
