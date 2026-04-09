@@ -1,8 +1,15 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import { ScrollArea } from './ui/scroll-area';
+import { usePostStore } from '@/store/usePostStore';
 
 const MainLayout = ({ children }) => {
+  const { posts } = usePostStore();
+
+  const openCount = posts.filter(p => !p.status || p.status === 'open').length;
+  const inProgressCount = posts.filter(p => p.status === 'in_progress').length;
+  const resolvedCount = posts.filter(p => p.status === 'resolved').length;
+  const criticalCount = posts.filter(p => p.status === 'critical').length;
   return (
     <div className="flex bg-background overflow-hidden max-w-7xl max-h-[calc(100vh-4rem)] mx-auto border-x border-border/50">
       {/* Sidebar - Fixed Left */}
@@ -18,7 +25,7 @@ const MainLayout = ({ children }) => {
       </main>
 
       {/* Widgets - Fixed Right */}
-      <aside className="hidden lg:flex flex-col w-80 p-6 gap-6">
+      <aside className="hidden lg:flex flex-col w-90 p-6 gap-6">
         <div className="glass rounded-2xl p-4 flex flex-col gap-4">
           <h2 className="text-xl font-bold">Trending Issues</h2>
           <div className="flex flex-col gap-3">
@@ -28,11 +35,13 @@ const MainLayout = ({ children }) => {
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-4 flex flex-col gap-4">
-          <h2 className="text-xl font-bold">QA Stats</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <StatCard label="Solved" value="128" />
-            <StatCard label="Pending" value="42" />
+        <div className="glass rounded-2xl p-4 flex flex-col gap-4 shadow-xl">
+          <h2 className="text-xl font-bold py-1">QA Stats</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <StatCard label="Open" value={openCount} color="text-zinc-400" />
+            <StatCard label="In Progress" value={inProgressCount} color="text-blue-500" />
+            <StatCard label="Resolved" value={resolvedCount} color="text-green-500" />
+            <StatCard label="Critical" value={criticalCount} color="text-red-500" />
           </div>
         </div>
       </aside>
@@ -48,10 +57,17 @@ const TrendingItem = ({ tag, count }) => (
   </div>
 );
 
-const StatCard = ({ label, value }) => (
-  <div className="bg-white/5 p-3 rounded-xl border border-white/5">
-    <div className="text-2xl font-bold text-secondary">{value}</div>
-    <div className="text-xs text-foreground/50">{label}</div>
+const StatCard = ({ label, value, color }) => (
+  <div className="bg-[#1a1a2e]/50 p-4 rounded-xl border border-white/5 flex flex-col justify-between hover:bg-white/[0.04] transition-all group overflow-hidden relative">
+    <div className="flex items-center gap-2">
+      <div className={`w-1.5 h-1.5 rounded-full bg-current ${color} opacity-80 shadow-[0_0_10px_currentColor]`} />
+      <span className="text-[11px] font-semibold tracking-wide text-foreground/50 uppercase group-hover:text-foreground/70 transition-colors">
+        {label}
+      </span>
+    </div>
+    <div className="text-3xl font-bold tracking-tight text-foreground/90 mt-2">
+      {value}
+    </div>
   </div>
 );
 

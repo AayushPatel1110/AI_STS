@@ -258,6 +258,39 @@ const PostCard = ({ post }) => {
                       </button>
                     </>
                   )}
+                  {post.status === 'resolved' && (
+                    <>
+                      <button
+                        onClick={() => { updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
+                      >
+                        Resolve
+                      </button>
+                      <button
+                        onClick={() => { updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
+                      >
+                        Critical
+                      </button>
+                    </>
+                  )}
+                  {post.status === 'critical' && (
+                    <>
+                      <button
+                        onClick={() => { updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
+                      >
+                        Resolve
+                      </button>
+                      <button
+                        onClick={() => { updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
+                      >
+                        Critical
+                      </button>
+                    </>
+                  )}
+
                 </div>
               )}
             </div>
