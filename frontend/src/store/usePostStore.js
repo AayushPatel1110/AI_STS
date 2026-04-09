@@ -39,6 +39,34 @@ export const usePostStore = create((set, get) => ({
         }
     },
 
+    deletePost: async (postId) => {
+        try {
+            await axiosInstance.delete(`tickets/${postId}`);
+            set((state) => ({
+                posts: state.posts.filter(p => p._id !== postId),
+                profilePosts: state.profilePosts.filter(p => p._id !== postId)
+            }));
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            throw error;
+        }
+    },
+
+    updatePost: async (postId, postData) => {
+        try {
+            const response = await axiosInstance.put(`tickets/${postId}`, postData);
+            const updatedPost = response.data;
+            set((state) => ({
+                posts: state.posts.map((post) => post._id === postId ? updatedPost : post),
+                profilePosts: state.profilePosts.map((post) => post._id === postId ? updatedPost : post)
+            }));
+            return updatedPost;
+        } catch (error) {
+            console.error("Error updating post:", error);
+            throw error;
+        }
+    },
+
     toggleLike: async (postId) => {
         try {
             const response = await axiosInstance.patch(`tickets/${postId}/like`);

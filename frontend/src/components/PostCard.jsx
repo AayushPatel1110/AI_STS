@@ -1,19 +1,51 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageCircle, Repeat2, Heart, Share, Terminal, ChevronDown, ChevronUp, CheckCircle2 } from 'lucide-react';
+import { MessageCircle, Repeat2, Heart, Share, Terminal, ChevronDown, ChevronUp, CheckCircle2, Trash2, Edit3 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Input } from './ui/input';
 import { usePostStore } from '@/store/usePostStore';
 import { useUser } from '@clerk/clerk-react';
 import { formatRelativeTime } from '@/lib/utils';
 
 const PostCard = ({ post }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { toggleLike } = usePostStore();
+  const { toggleLike, deletePost, updatePost } = usePostStore();
   const { user: currentUser } = useUser();
   const isLiked = post.likes?.some(id => id === currentUser?.id);
   const likeCount = post.likes?.length || 0;
+  
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editTitle, setEditTitle] = useState(post.title);
+  const [editDescription, setEditDescription] = useState(post.description);
+  const [editCode, setEditCode] = useState(post.code || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const isOwner = currentUser?.id && post.userId?.clerkId && currentUser.id === post.userId.clerkId;
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+          await deletePost(post._id);
+      } catch (e) {
+          console.error(e);
+      }
+    }
+  };
+
+  const handleEditSave = async () => {
+    setIsSaving(true);
+    try {
+        await updatePost(post._id, { title: editTitle, description: editDescription, code: editCode });
+        setIsEditDialogOpen(false);
+    } catch (e) {
+        console.error(e);
+    } finally {
+        setIsSaving(false);
+    }
+  };
 
   return (
     <Card className="border-b border-border/50 rounded-none bg-transparent hover:bg-white/[0.02] transition-colors group">
@@ -53,9 +85,65 @@ const PostCard = ({ post }) => {
               </div>
               <h3 className="text-lg font-bold text-primary leading-tight mt-1">{post.title}</h3>
             </div>
-            <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
-              <Share className="w-4 h-4" />
-            </Button>
+            
+            {isOwner ? (
+                <div className="flex items-center gap-1">
+                    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
+                                <Edit3 className="w-4 h-4" />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[500px]">
+                            <DialogHeader>
+                                <DialogTitle>Edit Post</DialogTitle>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid gap-2">
+                                    <label htmlFor="title" className="text-sm font-medium">Title</label>
+                                    <Input
+                                        id="title"
+                                        value={editTitle}
+                                        onChange={(e) => setEditTitle(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <label htmlFor="desc" className="text-sm font-medium">Description</label>
+                                    <textarea
+                                        id="desc"
+                                        className="flex min-h-[100px] w-full rounded-md border border-input bg-background/50 px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                                        value={editDescription}
+                                        onChange={(e) => setEditDescription(e.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-2">
+                                    <label htmlFor="code" className="text-sm font-medium flex items-center gap-2">
+                                        <Terminal className="w-4 h-4"/> Code Snippet
+                                    </label>
+                                    <textarea
+                                        id="code"
+                                        className="flex min-h-[120px] font-mono w-full rounded-md border border-input bg-[#0d0d1a] px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
+                                        value={editCode}
+                                        onChange={(e) => setEditCode(e.target.value)}
+                                        placeholder="Optional code snippet..."
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+                                <Button onClick={handleEditSave} disabled={isSaving}>Save Changes</Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
+                    <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-red-500" onClick={handleDelete}>
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
+                </div>
+            ) : (
+                <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
+                  <Share className="w-4 h-4" />
+                </Button>
+            )}
           </div>
           {/* Problem Text */}
           <p className="text-foreground/90 text-md leading-relaxed whitespace-pre-wrap">

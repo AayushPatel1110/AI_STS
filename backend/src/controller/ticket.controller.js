@@ -80,3 +80,55 @@ export const getProfileTickets = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+// @desc    Delete a ticket
+// @route   DELETE /api/tickets/:id
+export const deleteTicket = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
+        const clerkId = authState?.userId;
+
+        const user = await User.findOne({ clerkId });
+        const ticket = await Ticket.findById(id);
+
+        if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+        if (!user || ticket.userId.toString() !== user._id.toString()) {
+            return res.status(403).json({ message: "Unauthorized." });
+        }
+
+        await Ticket.findByIdAndDelete(id);
+        res.status(200).json({ message: "Ticket deleted successfully", id });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// @desc    Update a ticket
+// @route   PUT /api/tickets/:id
+export const updateTicket = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, code } = req.body;
+        const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
+        const clerkId = authState?.userId;
+
+        const user = await User.findOne({ clerkId });
+        const ticket = await Ticket.findById(id);
+
+        if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+        if (!user || ticket.userId.toString() !== user._id.toString()) {
+            return res.status(403).json({ message: "Unauthorized." });
+        }
+
+        ticket.title = title || ticket.title;
+        ticket.description = description || ticket.description;
+        ticket.code = code !== undefined ? code : ticket.code;
+
+        await ticket.save();
+        const populatedTicket = await Ticket.findById(id).populate("userId", "fullname imageUrl clerkId role username");
+        res.status(200).json(populatedTicket);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
