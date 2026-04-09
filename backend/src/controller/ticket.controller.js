@@ -7,6 +7,7 @@ export const getAllTickets = async (req, res) => {
     try {
         const tickets = await Ticket.find()
             .populate("userId", "fullname imageUrl clerkId role username")
+            .populate("assignedTo", "fullname imageUrl clerkId role username")
             .sort({ createdAt: -1 });
         res.status(200).json(tickets);
     } catch (error) {
@@ -30,7 +31,9 @@ export const createTicket = async (req, res) => {
             userId: user._id,
         });
 
-        const populatedTicket = await newTicket.populate("userId", "fullname imageUrl clerkId role username");
+        const populatedTicket = await newTicket
+            .populate("userId", "fullname imageUrl clerkId role username")
+            .populate("assignedTo", "fullname imageUrl clerkId role username");
         res.status(201).json(populatedTicket);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
@@ -74,6 +77,7 @@ export const getProfileTickets = async (req, res) => {
 
         const tickets = await Ticket.find({ userId: user._id })
             .populate("userId", "fullname imageUrl clerkId role username")
+            .populate("assignedTo", "fullname imageUrl clerkId role username")
             .sort({ createdAt: -1 });
         res.status(200).json(tickets);
     } catch (error) {
@@ -126,7 +130,48 @@ export const updateTicket = async (req, res) => {
         ticket.code = code !== undefined ? code : ticket.code;
 
         await ticket.save();
-        const populatedTicket = await Ticket.findById(id).populate("userId", "fullname imageUrl clerkId role username");
+        const populatedTicket = await Ticket.findById(id)
+            .populate("userId", "fullname imageUrl clerkId role username")
+            .populate("assignedTo", "fullname imageUrl clerkId role username");
+        res.status(200).json(populatedTicket);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// @desc    Update ticket status (Only developers)
+// @route   PATCH /api/tickets/:id/status
+export const updateTicketStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
+        const clerkId = authState?.userId;
+
+        const user = await User.findOne({ clerkId });
+        const ticket = await Ticket.findById(id);
+
+        if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+
+        // User must be a developer
+        if (!user || user.role !== 'developer') {
+            return res.status(403).json({ message: "Forbidden. Only developers can change ticket status." });
+        }
+
+        if (!["open", "in_progress", "resolved", "critical"].includes(status)) {
+            return res.status(400).json({ message: "Invalid status" });
+        }
+
+        if (status === 'in_progress' && !ticket.assignedTo) {
+            ticket.assignedTo = user._id; // Automatically assign to the dev who picks it up
+        }
+
+        ticket.status = status;
+        await ticket.save();
+
+        const populatedTicket = await Ticket.findById(id)
+            .populate("userId", "fullname imageUrl clerkId role username")
+            .populate("assignedTo", "fullname imageUrl clerkId role username");
         res.status(200).json(populatedTicket);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });

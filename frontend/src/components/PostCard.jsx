@@ -7,13 +7,15 @@ import { Card, CardContent } from './ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { Input } from './ui/input';
 import { usePostStore } from '@/store/usePostStore';
+import { useUserStore } from '@/store/useUserStore';
 import { useUser } from '@clerk/clerk-react';
 import { formatRelativeTime } from '@/lib/utils';
 
 const PostCard = ({ post }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { toggleLike, deletePost, updatePost } = usePostStore();
+  const { toggleLike, deletePost, updatePost, updatePostStatus } = usePostStore();
   const { user: currentUser } = useUser();
+  const { authUser } = useUserStore();
   const isLiked = post.likes?.some(id => id === currentUser?.id);
   const likeCount = post.likes?.length || 0;
 
@@ -22,8 +24,10 @@ const PostCard = ({ post }) => {
   const [editDescription, setEditDescription] = useState(post.description);
   const [editCode, setEditCode] = useState(post.code || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
 
   const isOwner = currentUser?.id && post.userId?.clerkId && currentUser.id === post.userId.clerkId;
+  const isDeveloper = authUser?.role === 'developer';
 
   const getStatusStyles = (status) => {
     switch (status) {
@@ -188,7 +192,7 @@ const PostCard = ({ post }) => {
           )}
 
           {/* Interaction Bar (Twitter Feature) */}
-          <div className="flex justify-between max-w-md mt-4 text-foreground/50">
+          <div className="flex items-center justify-between max-w-md mt-4 text-foreground/50">
             <div className="flex items-center gap-2 group/action hover:text-secondary transition-colors cursor-pointer">
               <div className="p-2 rounded-full group-hover/action:bg-secondary/10">
                 <MessageCircle className="w-5 h-5" />
@@ -208,11 +212,54 @@ const PostCard = ({ post }) => {
               <span className="text-sm">{likeCount}</span>
             </div>
 
-            <div className="flex items-center gap-3 pr-2 select-none">
-              <div className={`w-2.5 h-2.5 rounded-full ${statusStyle.bg} ${statusStyle.shadow} `} />
-              <span className="text-sm font-medium tracking-wide text-foreground/70 uppercase">
-                {statusStyle.label}
-              </span>
+            <div className="flex items-center gap-2 relative">
+              {post.assignedTo && (
+                <Link
+                  to={`/profile/${post.assignedTo.clerkId || post.assignedTo._id}`}
+                  className="text-[10px] font-bold tracking-wider text-blue-400/80 hover:text-blue-400 uppercase transition-colors mr-1"
+                >
+                  @{post.assignedTo.username}
+                </Link>
+              )}
+
+              <div
+                onClick={() => isDeveloper && !isOwner ? setIsStatusMenuOpen(!isStatusMenuOpen) : null}
+                className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper && !isOwner ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
+              >
+                <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
+                <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
+                  {statusStyle.label}
+                </span>
+              </div>
+
+              {isDeveloper && !isOwner && isStatusMenuOpen && (
+                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-[#0d0d1a] border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]">
+                  {post.status === 'open' && (
+                    <button
+                      onClick={() => { updatePostStatus(post._id, 'in_progress'); setIsStatusMenuOpen(false); }}
+                      className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-transparent hover:border-blue-500/20 rounded-lg transition-colors"
+                    >
+                      Take Issue
+                    </button>
+                  )}
+                  {post.status === 'in_progress' && (
+                    <>
+                      <button
+                        onClick={() => { updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
+                      >
+                        Resolve
+                      </button>
+                      <button
+                        onClick={() => { updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
+                      >
+                        Critical
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -3,8 +3,18 @@ import { axiosInstance } from "../lib/axios";
 
 export const useUserStore = create((set) => ({
     userProfile: null,
+    authUser: null,
     loading: false,
     error: null,
+
+    getAuthUser: async (id) => {
+        try {
+            const response = await axiosInstance.get(`users/profile/${id}`);
+            set({ authUser: response.data });
+        } catch (error) {
+            console.error("Failed to fetch auth user:", error);
+        }
+    },
 
     getUserProfile: async (id) => {
         set({ loading: true, error: null });

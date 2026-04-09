@@ -67,6 +67,21 @@ export const usePostStore = create((set, get) => ({
         }
     },
 
+    updatePostStatus: async (postId, status) => {
+        try {
+            const response = await axiosInstance.patch(`tickets/${postId}/status`, { status });
+            const updatedPost = response.data;
+            set((state) => ({
+                posts: state.posts.map((post) => post._id === postId ? updatedPost : post),
+                profilePosts: state.profilePosts.map((post) => post._id === postId ? updatedPost : post)
+            }));
+            return updatedPost;
+        } catch (error) {
+            console.error("Error updating post status:", error);
+            throw error;
+        }
+    },
+
     toggleLike: async (postId) => {
         try {
             const response = await axiosInstance.patch(`tickets/${postId}/like`);
