@@ -14,7 +14,7 @@ const TopBar = () => {
         {/* Brand */}
         <Link to="/" className="flex items-center gap-2">
           <h1 className="text-2xl font-black italic tracking-tighter text-primary select-none">
-            StackX
+            Fixora
           </h1>
         </Link>
 
