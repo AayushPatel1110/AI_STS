@@ -20,7 +20,8 @@ export const getAllTickets = async (req, res) => {
 export const createTicket = async (req, res) => {
     try {
         const { title, description, code } = req.body;
-        const clerkId = req.auth().userId; // From Clerk middleware
+        const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
+        const clerkId = authState?.userId;
         const user = await User.findOne({ clerkId });
         if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -31,10 +32,12 @@ export const createTicket = async (req, res) => {
             userId: user._id,
         });
 
-        const populatedTicket = await newTicket
-            .populate("userId", "fullname imageUrl clerkId role username")
-            .populate("assignedTo", "fullname imageUrl clerkId role username");
-        res.status(201).json(populatedTicket);
+        await newTicket.populate([
+            { path: "userId", select: "fullname imageUrl clerkId role username" },
+            { path: "assignedTo", select: "fullname imageUrl clerkId role username" }
+        ]);
+
+        res.status(201).json(newTicket);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -45,7 +48,8 @@ export const createTicket = async (req, res) => {
 export const toggleLike = async (req, res) => {
     try {
         const { id } = req.params;
-        const clerkId = req.auth().userId;
+        const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
+        const clerkId = authState?.userId;
 
         const user = await User.findOne({ clerkId });
         const ticket = await Ticket.findById(id);
