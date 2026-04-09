@@ -17,8 +17,15 @@ import { useUserStore } from '@/store/useUserStore';
 const ProfilePage = () => {
   const { id } = useParams();
   const { user: currentUser, isLoaded } = useUser();
-  const { getProfilePosts, profilePosts, loading: loadingPosts } = usePostStore();
+  const { getProfilePosts, profilePosts, loading: loadingPosts, statusFilter } = usePostStore();
   const { getUserProfile, userProfile, loading: loadingProfile, updateUserProfile } = useUserStore();
+
+  const filteredProfilePosts = statusFilter 
+    ? profilePosts.filter(post => {
+        if (statusFilter === 'open') return !post.status || post.status === 'open';
+        return post.status === statusFilter;
+      })
+    : profilePosts;
 
   const isOwnProfile = !id || id === currentUser?.id;
 
@@ -190,13 +197,16 @@ const ProfilePage = () => {
               <div className="p-12 flex justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-            ) : profilePosts.length > 0 ? (
-              profilePosts.map((post, idx) => (
+            ) : filteredProfilePosts.length > 0 ? (
+              filteredProfilePosts.map((post, idx) => (
                 <PostCard key={post._id || `post-${idx}`} post={post} />
               ))
             ) : (
               <div className="p-12 text-center text-foreground/40 font-medium italic">
-                {isOwnProfile ? "You haven't posted any issues yet." : "This user hasn't posted any issues yet."}
+                {statusFilter 
+                  ? `No issues found with status "${statusFilter}" on this profile.`
+                  : (isOwnProfile ? "You haven't posted any issues yet." : "This user hasn't posted any issues yet.")
+                }
               </div>
             )}
           </div>

@@ -7,7 +7,14 @@ import { usePostStore } from '@/store/usePostStore';
 import { Loader2 } from 'lucide-react';
 
 const HomePage = () => {
-  const { posts, fetchPosts, loading } = usePostStore();
+  const { posts, fetchPosts, loading, statusFilter } = usePostStore();
+
+  const filteredPosts = statusFilter 
+    ? posts.filter(post => {
+        if (statusFilter === 'open') return !post.status || post.status === 'open';
+        return post.status === statusFilter;
+      })
+    : posts;
 
   useEffect(() => {
     fetchPosts();
@@ -25,13 +32,16 @@ const HomePage = () => {
               <div className="p-12 flex justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-            ) : posts.length > 0 ? (
-              posts.map((post, idx) => (
+            ) : filteredPosts.length > 0 ? (
+              filteredPosts.map((post, idx) => (
                 <PostCard key={post._id || `post-${idx}`} post={post} />
               ))
             ) : (
               <div className="p-12 text-center text-foreground/40 font-medium italic">
-                No tickets or issues posted yet. Be the first to raise a technical concern!
+                {statusFilter 
+                  ? `No posts found with status "${statusFilter}".` 
+                  : "No tickets or issues posted yet. Be the first to raise a technical concern!"
+                }
               </div>
             )}
           </div>

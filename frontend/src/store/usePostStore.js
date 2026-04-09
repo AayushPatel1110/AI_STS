@@ -6,6 +6,9 @@ export const usePostStore = create((set, get) => ({
     profilePosts: [],
     loading: false,
     error: null,
+    statusFilter: null,
+
+    setStatusFilter: (filter) => set({ statusFilter: filter }),
 
     fetchPosts: async () => {
         set({ loading: true });
