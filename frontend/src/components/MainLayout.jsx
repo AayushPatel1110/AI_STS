@@ -34,12 +34,20 @@ const MainLayout = ({ children }) => {
 
       {/* Widgets - Fixed Right */}
       <aside className="hidden lg:flex flex-col w-80 p-3 gap-6">
-        <div className="glass rounded-2xl p-4 flex flex-col gap-4">
-          <h2 className="text-xl font-bold">Trending Issues</h2>
-          <div className="flex flex-col gap-3">
-            <TrendingItem tag="#react-compiler" count="1.2k" />
-            <TrendingItem tag="#tailwind-v4" count="850" />
-            <TrendingItem tag="#clerk-auth" count="420" />
+        <div className="glass rounded-2xl p-4 flex flex-col gap-4 max-h-[350px]">
+          <h2 className="text-xl font-bold">High Priority Issues</h2>
+          <div className="flex flex-col gap-3 overflow-y-auto scrollbar-hide pr-1">
+            {[...posts]
+              .sort((a, b) => {
+                const likesA = a.likes?.length || 0;
+                const likesB = b.likes?.length || 0;
+                if (likesB !== likesA) return likesB - likesA;
+                return new Date(a.createdAt) - new Date(b.createdAt);
+              })
+              .slice(0, 10)
+              .map((post) => (
+                <PriorityItem key={post._id} post={post} />
+              ))}
           </div>
         </div>
 
@@ -91,11 +99,19 @@ const MainLayout = ({ children }) => {
   );
 };
 
-const TrendingItem = ({ tag, count }) => (
-  <div className="flex flex-col hover:bg-white/5 p-2 rounded-lg cursor-pointer transition-colors">
-    <span className="text-sm text-foreground/50">Trending</span>
-    <span className="font-bold text-primary">{tag}</span>
-    <span className="text-xs text-foreground/40">{count} issues</span>
+const PriorityItem = ({ post }) => (
+  <div className="flex flex-col hover:bg-white/5 p-2 rounded-lg cursor-pointer transition-colors group">
+    <div className="flex justify-between items-start">
+      <span className="text-sm font-bold text-primary truncate max-w-[180px] group-hover:text-primary/80">
+        {post.title}
+      </span>
+      <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">
+        {post.likes?.length || 0} Likes
+      </span>
+    </div>
+    <span className="text-[11px] text-foreground/40 mt-1">
+      Posted {new Date(post.createdAt).toLocaleDateString()}
+    </span>
   </div>
 );
 

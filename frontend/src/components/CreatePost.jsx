@@ -11,7 +11,7 @@ const CreatePost = () => {
   const [title, setTitle] = useState('');
   const [code, setCode] = useState('');
   const [showCode, setShowCode] = useState(false);
-  const { createPost, loading } = usePostStore();
+  const { createPost, isCreatingPost } = usePostStore();
 
   const handlePost = async () => {
     if (!content.trim() || !title.trim()) return;
@@ -84,10 +84,10 @@ const CreatePost = () => {
 
             <Button
               onClick={handlePost}
-              disabled={loading || !content.trim() || !title.trim()}
+              disabled={isCreatingPost || !content.trim() || !title.trim()}
               className="bg-primary focus:outline-none hover:bg-primary/90 text-black px-8 rounded-full font-bold transition-all flex gap-2"
             >
-              {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              {isCreatingPost ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span>Post Issue</span>
             </Button>
           </div>

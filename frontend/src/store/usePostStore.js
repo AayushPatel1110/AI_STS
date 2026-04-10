@@ -4,14 +4,15 @@ import { axiosInstance } from "../lib/axios";
 export const usePostStore = create((set, get) => ({
     posts: [],
     profilePosts: [],
-    loading: false,
+    loading: false, // This is for initial fetch
+    isCreatingPost: false,
     error: null,
     statusFilter: null,
 
     setStatusFilter: (filter) => set({ statusFilter: filter }),
 
     fetchPosts: async () => {
-        set({ loading: true });
+        set({ loading: true, error: null });
         try {
             const response = await axiosInstance.get("tickets");
             set({ posts: response.data, loading: false });
@@ -21,23 +22,20 @@ export const usePostStore = create((set, get) => ({
     },
 
     createPost: async (postData) => {
-        set({ loading: true });
+        set({ isCreatingPost: true, error: null });
         try {
             const response = await axiosInstance.post("tickets/create", postData);
-            set((state) => {
-                const newPost = response.data;
-                const filteredPosts = state.posts.filter(p => p._id !== newPost._id);
-                const filteredProfilePosts = state.profilePosts.filter(p => p._id !== newPost._id);
-                
-                return {
-                    posts: [newPost, ...filteredPosts],
-                    profilePosts: [newPost, ...filteredProfilePosts],
-                    loading: false
-                };
-            });
-            return response.data;
+            const newPost = response.data;
+            
+            set((state) => ({
+                posts: [newPost, ...state.posts.filter(p => p._id !== newPost._id)],
+                profilePosts: [newPost, ...state.profilePosts.filter(p => p._id !== newPost._id)],
+                isCreatingPost: false
+            }));
+            
+            return newPost;
         } catch (error) {
-            set({ error: "Failed to create post", loading: false });
+            set({ error: "Failed to create post", isCreatingPost: false });
             throw error;
         }
     },
@@ -86,6 +84,13 @@ export const usePostStore = create((set, get) => ({
     },
 
     toggleLike: async (postId) => {
+        const state = get();
+        const currentPost = state.posts.find(p => p._id === postId) || state.profilePosts.find(p => p._id === postId);
+        if (!currentPost) return;
+
+        // Note: For a true optimistic update we'd need the current user's ID
+        // But even just updating the store with the response data is better with mapped updates.
+
         try {
             const response = await axiosInstance.patch(`tickets/${postId}/like`);
             const { likes } = response.data;
@@ -104,7 +109,7 @@ export const usePostStore = create((set, get) => ({
     },
 
     getProfilePosts: async (userId) => {
-        set({ loading: true });
+        set({ loading: true, error: null });
         try {
             const response = await axiosInstance.get(`tickets/profile/${userId}`);
             set({ profilePosts: response.data, loading: false });
@@ -112,8 +117,6 @@ export const usePostStore = create((set, get) => ({
         } catch (error) {
             set({ error: "Failed to fetch profile posts", loading: false });
             return [];
-        } finally {
-            set({ loading: false });
         }
     }
 }));
