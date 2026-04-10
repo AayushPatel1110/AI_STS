@@ -41,4 +41,17 @@ export const useUserStore = create((set) => ({
             throw error;
         }
     },
+
+    getUsers: async () => {
+        set({ loading: true });
+        try {
+            const response = await axiosInstance.get("users");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching users:", error);
+            return [];
+        } finally {
+            set({ loading: false });
+        }
+    }
 }));

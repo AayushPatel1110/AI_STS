@@ -5,7 +5,7 @@ import { usePostStore } from '@/store/usePostStore';
 
 const MainLayout = ({ children }) => {
   const { posts, setStatusFilter, statusFilter } = usePostStore();
-  
+
   const openCount = posts.filter(p => !p.status || p.status === 'open').length;
   const inProgressCount = posts.filter(p => p.status === 'in_progress').length;
   const resolvedCount = posts.filter(p => p.status === 'resolved').length;
@@ -33,7 +33,7 @@ const MainLayout = ({ children }) => {
       </main>
 
       {/* Widgets - Fixed Right */}
-      <aside className="hidden lg:flex flex-col w-90 p-6 gap-6">
+      <aside className="hidden lg:flex flex-col w-80 p-3 gap-6">
         <div className="glass rounded-2xl p-4 flex flex-col gap-4">
           <h2 className="text-xl font-bold">Trending Issues</h2>
           <div className="flex flex-col gap-3">
@@ -47,7 +47,7 @@ const MainLayout = ({ children }) => {
           <div className="flex justify-between items-center py-1">
             <h2 className="text-xl font-bold">QA Stats</h2>
             {statusFilter && (
-              <button 
+              <button
                 onClick={() => setStatusFilter(null)}
                 className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest"
               >
@@ -56,31 +56,31 @@ const MainLayout = ({ children }) => {
             )}
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <StatCard 
-              label="Open" 
-              value={openCount} 
-              color="text-zinc-400" 
+            <StatCard
+              label="Open"
+              value={openCount}
+              color="text-zinc-400"
               isActive={statusFilter === 'open'}
               onClick={() => handleFilterClick('open')}
             />
-            <StatCard 
-              label="In Progress" 
-              value={inProgressCount} 
-              color="text-blue-500" 
+            <StatCard
+              label="In Progress"
+              value={inProgressCount}
+              color="text-blue-500"
               isActive={statusFilter === 'in_progress'}
               onClick={() => handleFilterClick('in_progress')}
             />
-            <StatCard 
-              label="Resolved" 
-              value={resolvedCount} 
-              color="text-green-500" 
+            <StatCard
+              label="Resolved"
+              value={resolvedCount}
+              color="text-green-500"
               isActive={statusFilter === 'resolved'}
               onClick={() => handleFilterClick('resolved')}
             />
-            <StatCard 
-              label="Critical" 
-              value={criticalCount} 
-              color="text-red-500" 
+            <StatCard
+              label="Critical"
+              value={criticalCount}
+              color="text-red-500"
               isActive={statusFilter === 'critical'}
               onClick={() => handleFilterClick('critical')}
             />
@@ -100,13 +100,12 @@ const TrendingItem = ({ tag, count }) => (
 );
 
 const StatCard = ({ label, value, color, isActive, onClick }) => (
-  <div 
+  <div
     onClick={onClick}
-    className={`p-4 rounded-xl border flex flex-col justify-between transition-all group overflow-hidden relative cursor-pointer ${
-      isActive 
-        ? 'bg-white/10 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] scale-[1.02]' 
-        : 'bg-[#1a1a2e]/50 border-white/5 hover:bg-white/[0.04]'
-    }`}
+    className={`p-4 rounded-xl border flex flex-col justify-between transition-all group overflow-hidden relative cursor-pointer ${isActive
+      ? 'bg-white/10 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] scale-[1.02]'
+      : 'bg-[#1a1a2e]/50 border-white/5 hover:bg-white/[0.04]'
+      }`}
   >
     <div className="flex items-center gap-2">
       <div className={`w-1.5 h-1.5 rounded-full bg-current ${color} ${isActive ? 'opacity-100 scale-125' : 'opacity-80'} shadow-[0_0_10px_currentColor] transition-all`} />
