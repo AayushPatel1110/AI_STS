@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useUser } from '@clerk/clerk-react';
 import { useChatStore } from '@/store/useChatStore';
+import LinkifiedText from '@/components/LinkifiedText';
 
 const MessagesPage = () => {
   const { user } = useUser();
@@ -63,7 +64,7 @@ const MessagesPage = () => {
                         : 'bg-white/10 text-foreground rounded-tl-none'
                     }`}>
                       <p className="text-sm font-medium mb-1">{msg.sender?.fullname}</p>
-                      <p>{msg.content}</p>
+                      <p><LinkifiedText text={msg.content} /></p>
                       <span className="text-[10px] opacity-50 block mt-1">
                         {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>

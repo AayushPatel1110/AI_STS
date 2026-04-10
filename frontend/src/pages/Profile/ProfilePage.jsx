@@ -11,8 +11,7 @@ import { usePostStore } from '@/store/usePostStore';
 import PostCard from '@/components/PostCard';
 import { useParams } from 'react-router-dom';
 import { useUserStore } from '@/store/useUserStore';
-
-
+import LinkifiedText from '@/components/LinkifiedText';
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -176,7 +175,7 @@ const ProfilePage = () => {
             </div>
 
             <p className="text-foreground/90 max-w-xl text-lg leading-relaxed whitespace-pre-wrap">
-              {displayUser?.bio || "This user hasn't added a bio yet."}
+              {displayUser?.bio ? <LinkifiedText text={displayUser.bio} /> : "This user hasn't added a bio yet."}
             </p>
 
             <div className="flex flex-wrap gap-4 text-foreground/50 text-sm mt-2">

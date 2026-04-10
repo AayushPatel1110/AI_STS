@@ -11,6 +11,8 @@ import { useUserStore } from '@/store/useUserStore';
 import { useUser } from '@clerk/clerk-react';
 import { formatRelativeTime } from '@/lib/utils';
 
+import LinkifiedText from './LinkifiedText';
+
 const PostCard = ({ post }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { toggleLike, deletePost, updatePost, updatePostStatus } = usePostStore();
@@ -164,7 +166,7 @@ const PostCard = ({ post }) => {
           </div>
           {/* Problem Text */}
           <p className="text-foreground/90 text-md leading-relaxed whitespace-pre-wrap">
-            {post.description}
+            <LinkifiedText text={post.description} />
           </p>
 
           {/* Code Snippet (StackOverflow Feature) */}
