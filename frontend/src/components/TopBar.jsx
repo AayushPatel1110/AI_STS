@@ -1,5 +1,5 @@
-import React from 'react';
-import { Search, LayoutDashboard } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, LayoutDashboard, Sun, Moon } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react';
 import { Input } from './ui/input';
@@ -8,6 +8,21 @@ import SignInOAuthButton from './SignInOAuthButton';
 const isAdmin = false; // Replace with actual logic
 
 const TopBar = () => {
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
       <div className="flex h-16 items-center justify-between px-6 gap-4">
@@ -18,19 +33,16 @@ const TopBar = () => {
           </h1>
         </Link>
 
-        {/* Search (Twitter Style) */}
-        <div className="flex-1 max-w-md hidden md:block">
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30 group-focus-within:text-primary transition-colors" />
-            <Input
-              placeholder="Search issues, tags, or users..."
-              className="pl-10 bg-white/5 border-border/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/20 rounded-full transition-all"
-            />
-          </div>
-        </div>
+
 
         {/* Auth & Actions */}
         <div className="flex items-center gap-4">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-full text-foreground/60 hover:text-primary transition-colors bg-white/5 hover:bg-white/10 border border-white/10"
+          >
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
           {isAdmin && (
             <Link to="/admin" className="hidden sm:flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors">
               <LayoutDashboard className="w-4 h-4" />

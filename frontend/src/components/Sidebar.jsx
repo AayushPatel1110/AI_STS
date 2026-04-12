@@ -47,7 +47,7 @@ const Sidebar = () => {
               window.scrollTo({ top: 0, behavior: 'smooth' });
               document.querySelector('input[placeholder="What\'s the issue title?"]')?.focus();
             }}
-            className="w-full py-6 rounded-full bg-white hover:bg-black hover:text-white text-black font-bold text-lg  transition-all active:scale-95"
+            className="w-full py-6 rounded-full bg-primary hover:bg-primary/90 text-white font-bold text-lg transition-all active:scale-95 shadow-lg shadow-primary/20"
           >
             <PlusCircle className="xl:hidden w-6 h-6 " />
             <span className="hidden xl:block">Post Issue</span>

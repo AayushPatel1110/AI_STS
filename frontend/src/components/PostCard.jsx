@@ -198,7 +198,7 @@ const PostCard = ({ post }) => {
 
           {/* Code Snippet (StackOverflow Feature) */}
           {post.code && (
-            <div className="mt-2 w-full rounded-xl overflow-hidden border border-border/50 bg-[#0d0d1a] shadow-inner relative z-10">
+            <div className="mt-2 w-full rounded-xl overflow-hidden border border-border/50 bg-[#080812] shadow-inner relative z-10">
               <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Terminal className="w-4 h-4 text-secondary" />
@@ -221,7 +221,7 @@ const PostCard = ({ post }) => {
           )}
 
           {/* Interaction Bar (Twitter Feature) */}
-          <div className="flex items-center justify-between max-w-md mt-4 text-foreground/50 z-10">
+          <div className="flex items-center justify-between max-w-md mt-6 text-foreground/50 z-10 relative">
             <Link 
               to={`/ticket/${post._id}`} 
               className="flex items-center gap-2 group/action hover:text-secondary transition-colors cursor-pointer"
@@ -272,7 +272,7 @@ const PostCard = ({ post }) => {
 
               {isDeveloper && !isOwner && isStatusMenuOpen && (
                 <div 
-                  className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-[#0d0d1a] border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]"
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-card border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {post.status === 'open' && (
