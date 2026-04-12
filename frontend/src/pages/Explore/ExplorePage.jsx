@@ -3,7 +3,7 @@ import MainLayout from '@/components/MainLayout';
 import TopBar from '@/components/TopBar';
 import PostCard from '@/components/PostCard';
 import UserCard from '@/components/UserCard';
-import { Search, Hash, Users, Ticket, Loader2, Sparkles } from 'lucide-react';
+import { Search, Hash, Users, Ticket, Loader2, Sparkles, ChevronRight, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { usePostStore } from '@/store/usePostStore';
@@ -39,6 +39,8 @@ const ExplorePage = () => {
 
   const isLoading = postsLoading || usersLoading || isInitialLoading;
 
+  const categories = ['Frontend', 'Backend', 'API', 'Database', 'Security'];
+
   return (
     <div className="min-h-screen bg-background text-foreground scrollbar-hide">
       <TopBar />
@@ -47,7 +49,7 @@ const ExplorePage = () => {
           {/* Header Section */}
           <div className="flex flex-col gap-2 relative">
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 blur-[80px] rounded-full pointer-events-none" />
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-foreground via-foreground to-foreground/40 bg-clip-text text-transparent">
               Explore
             </h1>
             <p className="text-foreground/50 flex items-center gap-2">
@@ -57,19 +59,27 @@ const ExplorePage = () => {
           </div>
 
           {/* Search & Toggle Bar */}
-          <div className="flex flex-col gap-4 sticky top-0 z-10 bg-background/80 backdrop-blur-xl py-4 -my-4 border-b border-white/5">
+          <div className="flex flex-col gap-4 sticky top-0 z-30 bg-background/80 backdrop-blur-xl py-4 -my-4 border-b border-border/50">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/30 group-focus-within:text-primary transition-colors" />
               <Input
-                className="pl-12 bg-white/5 border-white/10 h-14 text-lg rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all shadow-2xl"
+                className="pl-12 pr-12 bg-card/40 border-border/50 h-14 text-lg rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all shadow-2xl"
                 placeholder={`Search for ${searchMode === 'tickets' ? 'problems, titles...' : 'names, usernames...'}`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-white/10 text-foreground/40 hover:text-primary transition-all active:scale-90"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
             </div>
 
             <Tabs defaultValue="tickets" className="w-full" onValueChange={setSearchMode}>
-              <TabsList className="bg-white/5 p-1 border border-white/10 glass rounded-xl w-fit h-auto flex gap-1">
+              <TabsList className="bg-card/40 p-1 border border-border/50 glass rounded-xl w-fit h-auto flex gap-1">
                 <TabsTrigger
                   value="tickets"
                   className="gap-2 px-6 py-2.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black transition-all font-medium"
@@ -90,12 +100,23 @@ const ExplorePage = () => {
 
           {/* Results Area */}
           <div className="flex flex-col gap-6">
-            {!searchQuery && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <TopicCard title="Frontend" count="1.2k issues" color="text-primary" />
-                <TopicCard title="Backend" count="850 issues" color="text-secondary" />
-                <TopicCard title="DevOps" count="320 issues" color="text-accent" />
-                <TopicCard title="Security" count="150 issues" color="text-red-400" />
+            {!searchQuery && searchMode === 'tickets' && (
+              <div className="flex flex-col gap-4 mb-2">
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground/30 px-1">
+                  Popular Keywords
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSearchQuery(cat)}
+                      className="px-4 py-2 glass rounded-full border border-border/50 hover:bg-primary hover:text-black hover:border-primary transition-all text-sm font-bold flex items-center gap-2 group shadow-sm active:scale-95"
+                    >
+                      <Hash className="w-3.5 h-3.5 text-primary group-hover:text-black transition-colors" />
+                      {cat}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -139,14 +160,6 @@ const ExplorePage = () => {
     </div>
   );
 };
-
-const TopicCard = ({ title, count, color }) => (
-  <div className="glass p-6 rounded-2xl hover:bg-white/10 transition-all cursor-pointer border border-white/5 group relative overflow-hidden">
-    <div className={`absolute top-0 left-0 w-1 h-full ${color.replace('text', 'bg')} opacity-50`} />
-    <h3 className={`text-xl font-bold mb-1 ${color} group-hover:translate-x-1 transition-transform`}>{title}</h3>
-    <p className="text-sm text-foreground/40">{count}</p>
-  </div>
-);
 
 const EmptyState = ({ icon: Icon, text }) => (
   <div className="py-20 flex flex-col items-center justify-center gap-4 text-foreground/20 border-2 border-dashed border-white/5 rounded-3xl">

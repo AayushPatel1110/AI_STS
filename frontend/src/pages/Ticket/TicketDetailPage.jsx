@@ -129,7 +129,7 @@ const TicketDetailPage = () => {
                 </div>
 
                 {isDeveloper && !isOwner && isStatusMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 flex flex-col gap-1.5 bg-[#0d0d1a] border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]">
+                  <div className="absolute top-full right-0 mt-2 flex flex-col gap-1.5 bg-card border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]">
                     {currentPost.status === 'open' && (
                       <button
                         onClick={() => { updatePostStatus(currentPost._id, 'in_progress'); setIsStatusMenuOpen(false); }}
@@ -168,7 +168,7 @@ const TicketDetailPage = () => {
             </div>
 
             {currentPost.code && (
-              <div className="mt-6 w-full rounded-2xl overflow-hidden border border-border/50 bg-[#0d0d1a] shadow-inner relative">
+              <div className="mt-6 w-full rounded-2xl overflow-hidden border border-border/50 bg-[#080812] shadow-inner relative">
                 <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <Terminal className="w-4 h-4 text-secondary" />
@@ -190,7 +190,19 @@ const TicketDetailPage = () => {
               </div>
             )}
 
-            <div className="flex items-center gap-6 text-foreground/40">
+            {currentPost.code && <div className="mb-6" />}
+
+            <div className="py-4 border-y border-border/50 text-sm text-foreground/40 mt-6 flex gap-1.5 font-medium">
+              <span className="hover:underline cursor-default">
+                {new Date(currentPost.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+              </span>
+              <span>·</span>
+              <span className="hover:underline cursor-default">
+                {new Date(currentPost.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-6 text-foreground/40 mt-4">
               <button 
                 onClick={() => toggleLike(currentPost._id)}
                 className={`flex items-center gap-2 transition-colors ${isLiked ? 'text-purple-500' : 'hover:text-purple-500'}`}
@@ -200,13 +212,15 @@ const TicketDetailPage = () => {
                 </div>
                 <span className="text-sm font-bold">{currentPost.likes?.length || 0}</span>
               </button>
-              <div className="flex items-center gap-2">
-                <MessageSquare className="w-5 h-5" />
+              <div className="flex items-center gap-2 group/comment hover:text-secondary cursor-pointer transition-colors">
+                <div className="p-2 rounded-full group-hover/comment:bg-secondary/10">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
                 <span className="text-sm font-bold">{comments.length}</span>
               </div>
               <button 
                 onClick={handleShare}
-                className="hover:text-primary transition-colors ml-auto"
+                className="p-2 rounded-full hover:bg-primary/10 hover:text-primary transition-colors ml-auto"
               >
                 <Share2 className="w-5 h-5" />
               </button>
