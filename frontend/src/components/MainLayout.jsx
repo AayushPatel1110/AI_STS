@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import { ScrollArea } from './ui/scroll-area';
 import { usePostStore } from '@/store/usePostStore';
 import { Link } from 'react-router-dom';
+import { formatRelativeTime } from '@/lib/utils';
 
 const MainLayout = ({ children }) => {
   const { posts, setStatusFilter, statusFilter, fetchPosts } = usePostStore();
@@ -43,8 +44,9 @@ const MainLayout = ({ children }) => {
       <aside className="hidden lg:flex flex-col w-80 p-3 gap-6">
         <div className="glass rounded-2xl p-4 flex flex-col gap-4 max-h-[350px]">
           <h2 className="text-xl font-bold">High Priority Issues</h2>
-          <div className="flex flex-col gap-3 overflow-y-auto scrollbar-hide pr-1">
+          <div className="flex flex-col gap-1 overflow-y-auto scrollbar-hide pr-1">
             {[...posts]
+              .filter((p) => p.status !== 'resolved')
               .sort((a, b) => {
                 // First priority: Critical status
                 if (a.status === 'critical' && b.status !== 'critical') return -1;
@@ -114,28 +116,55 @@ const MainLayout = ({ children }) => {
   );
 };
 // =================================================================================
-const PriorityItem = ({ post }) => (
-  <div className="flex flex-col hover:bg-white/5 p-2 rounded-lg cursor-pointer transition-colors group">
-    <div className="flex justify-between items-start">
-      <span className="text-sm font-bold text-primary truncate max-w-[180px] group-hover:text-primary/80">
-        {post.title}
-      </span>
-      <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold">
-        {post.likes?.length || 0} Likes
-      </span>
+const PriorityItem = ({ post }) => {
+  const getStatusInfo = (status) => {
+    switch (status) {
+      case 'in_progress':
+        return { color: 'bg-yellow-500', label: 'In Progress' };
+      case 'resolved':
+        return { color: 'bg-green-500', label: 'Resolved' };
+      case 'critical':
+        return { color: 'bg-red-500', label: 'Critical' };
+      default:
+        return { color: 'bg-zinc-400', label: 'Open' };
+    }
+  };
+
+  const status = getStatusInfo(post.status);
+
+  return (
+    <div className="flex flex-col hover:bg-white/5 p-2 rounded-lg cursor-pointer transition-colors group">
+      <div className="flex justify-between items-start gap-2">
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="text-sm font-bold text-primary truncate group-hover:text-primary/80">
+            {post.title}
+          </span>
+          <span className="text-[10px] text-foreground/20 font-mono mt-0.5">
+            {new Date(post.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
+          </span>
+        </div>
+        <div className="flex flex-col items-end gap-0.5 shrink-0">
+          <span className="text-[9px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-bold whitespace-nowrap">
+            {post.likes?.length || 0} Repost
+          </span>
+          <div className="flex items-center gap-1">
+            <div className={`w-1 h-1 rounded-full ${status.color} shadow-[0_0_5px_currentColor]`} />
+            <span className="text-[8px] font-bold text-foreground/40 uppercase tracking-tighter">
+              {status.label}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
-    <span className="text-[11px] text-foreground/40 mt-1">
-      Posted {new Date(post.createdAt).toLocaleDateString()}
-    </span>
-  </div>
-);
+  );
+};
 
 const StatCard = ({ label, value, color, isActive, onClick }) => (
   <div
     onClick={onClick}
     className={`p-4 rounded-xl border flex flex-col justify-between transition-all group overflow-hidden relative cursor-pointer ${isActive
-      ? 'bg-white/10 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)] scale-[1.02]'
-      : 'bg-[#1a1a2e]/50 border-white/5 hover:bg-white/[0.04]'
+      ? 'bg-primary/10 border-primary/50 shadow-[0_0_15px_rgba(139,92,246,0.1)] scale-[1.02]'
+      : 'bg-card/50 border-border/50 hover:bg-card/80'
       }`}
   >
     <div className="flex items-center gap-2">
