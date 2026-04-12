@@ -2,6 +2,7 @@ import React from 'react';
 import { Home, Compass, Bell, Mail, User, PlusCircle, MessageSquare } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@clerk/clerk-react';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -12,6 +13,8 @@ const navItems = [
 ];
 
 const Sidebar = () => {
+  const { isSignedIn } = useAuth();
+
   return (
     <div className="flex flex-col h-full py-6 gap-8">
       {/* Logo */}
@@ -37,18 +40,20 @@ const Sidebar = () => {
       </nav>
 
       {/* Post Button */}
-      <div className="px-2">
-        <Button
-          onClick={() => {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            document.querySelector('input[placeholder="What\'s the issue title?"]')?.focus();
-          }}
-          className="w-full py-6 rounded-full bg-white hover:bg-black hover:text-white text-black font-bold text-lg  transition-all active:scale-95"
-        >
-          <PlusCircle className="xl:hidden w-6 h-6 " />
-          <span className="hidden xl:block">Post Issue</span>
-        </Button>
-      </div>
+      {isSignedIn && (
+        <div className="px-2">
+          <Button
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+              document.querySelector('input[placeholder="What\'s the issue title?"]')?.focus();
+            }}
+            className="w-full py-6 rounded-full bg-white hover:bg-black hover:text-white text-black font-bold text-lg  transition-all active:scale-95"
+          >
+            <PlusCircle className="xl:hidden w-6 h-6 " />
+            <span className="hidden xl:block">Post Issue</span>
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -8,6 +8,8 @@ import { useUser } from '@clerk/clerk-react';
 const CreatePost = () => {
   const { user, isLoaded } = useUser();
   const [content, setContent] = useState('');
+
+  if (!isLoaded || !user) return null;
   const [title, setTitle] = useState('');
   const [code, setCode] = useState('');
   const [showCode, setShowCode] = useState(false);

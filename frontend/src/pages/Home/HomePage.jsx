@@ -5,10 +5,12 @@ import CreatePost from '@/components/CreatePost';
 import PostCard from '@/components/PostCard';
 import { usePostStore } from '@/store/usePostStore';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@clerk/clerk-react';
 
 const HomePage = () => {
-  const { posts, fetchPosts, loading, statusFilter } = usePostStore();
-
+  const { posts, fetchPosts, fetchingPosts: loading, statusFilter } = usePostStore();
+  const { isSignedIn } = useAuth();
+  
   const filteredPosts = statusFilter 
     ? posts.filter(post => {
         if (statusFilter === 'open') return !post.status || post.status === 'open';
@@ -25,7 +27,7 @@ const HomePage = () => {
       <TopBar />
       <MainLayout>
         <div className="flex flex-col">
-          <CreatePost />
+          {isSignedIn && <CreatePost />}
 
           <div className="flex flex-col">
             {loading ? (

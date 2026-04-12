@@ -16,7 +16,7 @@ import LinkifiedText from '@/components/LinkifiedText';
 const ProfilePage = () => {
   const { id } = useParams();
   const { user: currentUser, isLoaded } = useUser();
-  const { getProfilePosts, profilePosts, loading: loadingPosts, statusFilter } = usePostStore();
+  const { getProfilePosts, profilePosts, fetchingPosts: loadingPosts, statusFilter } = usePostStore();
   const { getUserProfile, userProfile, loading: loadingProfile, updateUserProfile } = useUserStore();
 
   const filteredProfilePosts = statusFilter 

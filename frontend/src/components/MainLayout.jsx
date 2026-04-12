@@ -2,9 +2,16 @@ import React from 'react';
 import Sidebar from './Sidebar';
 import { ScrollArea } from './ui/scroll-area';
 import { usePostStore } from '@/store/usePostStore';
+import { Link } from 'react-router-dom';
 
 const MainLayout = ({ children }) => {
-  const { posts, setStatusFilter, statusFilter } = usePostStore();
+  const { posts, setStatusFilter, statusFilter, fetchPosts } = usePostStore();
+
+  React.useEffect(() => {
+    if (posts.length === 0) {
+      fetchPosts();
+    }
+  }, [posts.length, fetchPosts]);
 
   const openCount = posts.filter(p => !p.status || p.status === 'open').length;
   const inProgressCount = posts.filter(p => p.status === 'in_progress').length;
@@ -39,14 +46,22 @@ const MainLayout = ({ children }) => {
           <div className="flex flex-col gap-3 overflow-y-auto scrollbar-hide pr-1">
             {[...posts]
               .sort((a, b) => {
+                // First priority: Critical status
+                if (a.status === 'critical' && b.status !== 'critical') return -1;
+                if (b.status === 'critical' && a.status !== 'critical') return 1;
+
+                // Second priority: Likes count
                 const likesA = a.likes?.length || 0;
                 const likesB = b.likes?.length || 0;
                 if (likesB !== likesA) return likesB - likesA;
-                return new Date(a.createdAt) - new Date(b.createdAt);
+                
+                return new Date(b.createdAt) - new Date(a.createdAt);
               })
               .slice(0, 10)
               .map((post) => (
-                <PriorityItem key={post._id} post={post} />
+                <Link key={post._id} to={`/ticket/${post._id}`}>
+                  <PriorityItem post={post} />
+                </Link>
               ))}
           </div>
         </div>
@@ -74,7 +89,7 @@ const MainLayout = ({ children }) => {
             <StatCard
               label="In Progress"
               value={inProgressCount}
-              color="text-blue-500"
+              color="text-yellow-500"
               isActive={statusFilter === 'in_progress'}
               onClick={() => handleFilterClick('in_progress')}
             />
@@ -98,7 +113,7 @@ const MainLayout = ({ children }) => {
     </div>
   );
 };
-
+// =================================================================================
 const PriorityItem = ({ post }) => (
   <div className="flex flex-col hover:bg-white/5 p-2 rounded-lg cursor-pointer transition-colors group">
     <div className="flex justify-between items-start">

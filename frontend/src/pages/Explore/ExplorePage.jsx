@@ -13,7 +13,7 @@ const ExplorePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchMode, setSearchMode] = useState('tickets');
   const [allUsers, setAllUsers] = useState([]);
-  const { posts, fetchPosts, loading: postsLoading } = usePostStore();
+  const { posts, fetchPosts, fetchingPosts: postsLoading } = usePostStore();
   const { getUsers, loading: usersLoading } = useUserStore();
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 

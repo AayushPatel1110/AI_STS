@@ -4,6 +4,7 @@ import userRoutes from './Routes/user.route.js';
 import authRoutes from './Routes/auth.route.js';
 import adminRoutes from './Routes/admin.route.js';
 import ticketRoutes from './Routes/ticket.route.js';
+import commentRoutes from './Routes/comment.route.js';
 import statsRoutes from './Routes/stats.route.js';
 import messageRoutes from './Routes/message.route.js';
 import { connectDB } from './lib/db.js';
@@ -28,6 +29,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/tickets', ticketRoutes);
+app.use('/api/comments', commentRoutes);
 app.get('/', (req, res) => res.json({ message: "API is running. Use /api/health for more info." }));
 
 app.use('/api/stats', statsRoutes);

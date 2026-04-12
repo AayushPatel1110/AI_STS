@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { MessageCircle, Repeat2, Heart, Share, Terminal, ChevronDown, ChevronUp, CheckCircle2, Trash2, Edit3 } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { Link, useNavigate } from 'react-router-dom';
+import { MessageSquare, Repeat2, Heart, Share, Terminal, ChevronDown, ChevronUp, CheckCircle2, Trash2, Edit3 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -14,6 +15,7 @@ import { formatRelativeTime } from '@/lib/utils';
 import LinkifiedText from './LinkifiedText';
 
 const PostCard = ({ post }) => {
+  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(false);
   const { toggleLike, deletePost, updatePost, updatePostStatus } = usePostStore();
   const { user: currentUser } = useUser();
@@ -34,7 +36,7 @@ const PostCard = ({ post }) => {
   const getStatusStyles = (status) => {
     switch (status) {
       case 'in_progress':
-        return { bg: 'bg-blue-500', shadow: 'shadow-[0_0_12px_rgba(59,130,246,0.8)]', label: 'In Progress' };
+        return { bg: 'bg-yellow-500', shadow: 'shadow-[0_0_12px_rgba(234,179,8,0.8)]', label: 'In Progress' };
       case 'resolved':
         return { bg: 'bg-green-500', shadow: 'shadow-[0_0_12px_rgba(34,197,94,0.8)]', label: 'Resolved' };
       case 'critical':
@@ -69,27 +71,48 @@ const PostCard = ({ post }) => {
     }
   };
 
+  const handleShare = (e) => {
+    e.stopPropagation();
+    const url = `${window.location.origin}/ticket/${post._id}`;
+    navigator.clipboard.writeText(url).then(() => {
+      toast.success("Ticket link copied to clipboard!");
+    });
+  };
+
+  const handleCardClick = () => {
+    navigate(`/ticket/${post._id}`);
+  };
+
   return (
-    <Card className="border-b border-border/50 rounded-none bg-transparent hover:bg-white/[0.02] transition-colors group">
+    <Card 
+      className="border-b border-border/50 rounded-none bg-transparent hover:bg-white/[0.02] transition-colors group cursor-pointer"
+      onClick={handleCardClick}
+    >
       <CardContent className="p-4 flex gap-4">
         {/* Avatar Area */}
         <div className="flex flex-col items-center">
-          <Avatar className="w-12 h-12 border border-primary/20">
-            <AvatarImage src={post.userId?.imageUrl} />
-            <AvatarFallback>{post.userId?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
-          </Avatar>
+          <Link 
+            to={`/profile/${post.userId?.clerkId || post.userId?._id}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Avatar className="w-12 h-12 border border-primary/20">
+              <AvatarImage src={post.userId?.imageUrl} />
+              <AvatarFallback>{post.userId?.fullname?.substring(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
+          </Link>
           <div className="w-[2px] flex-grow bg-border/30 my-2 rounded-full" />
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 min-w-0 flex flex-col gap-2">
+        <div className="flex-1 min-w-0 flex flex-col gap-2 relative">
           {/* Header */}
           <div className="flex justify-between items-start">
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <Link
                   to={`/profile/${post.userId?.clerkId || post.userId?._id}`}
-                  className="font-bold text-md text-foreground hover:underline cursor-pointer flex items-center gap-2"
+                  className="font-bold text-md text-foreground hover:underline cursor-pointer flex items-center gap-2 z-10"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   {post.userId?.fullname}
 
@@ -102,18 +125,20 @@ const PostCard = ({ post }) => {
                 )}
                 <span className="text-foreground/40 text-lg whitespace-nowrap">· {formatRelativeTime(post.createdAt)}</span>
               </div>
-              <h3 className="text-lg font-bold text-primary leading-tight mt-1">{post.title}</h3>
+              <div className="group/title">
+                <h3 className="text-lg font-bold text-primary leading-tight mt-1 group-hover/title:underline cursor-pointer">{post.title}</h3>
+              </div>
             </div>
 
             {isOwner ? (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 z-10">
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
+                    <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary" onClick={(e) => e.stopPropagation()}>
                       <Edit3 className="w-4 h-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]">
+                  <DialogContent className="sm:max-w-[500px]" onClick={(e) => e.stopPropagation()}>
                     <DialogHeader>
                       <DialogTitle>Edit Post</DialogTitle>
                     </DialogHeader>
@@ -154,31 +179,33 @@ const PostCard = ({ post }) => {
                     </div>
                   </DialogContent>
                 </Dialog>
-                <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-red-500" onClick={handleDelete}>
+                <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(); }}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
             ) : (
-              <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary">
+              <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary z-10" onClick={handleShare}>
                 <Share className="w-4 h-4" />
               </Button>
             )}
           </div>
           {/* Problem Text */}
-          <p className="text-foreground/90 text-md leading-relaxed whitespace-pre-wrap">
-            <LinkifiedText text={post.description} />
-          </p>
+          <div className="block">
+            <p className="text-foreground/90 text-md leading-relaxed whitespace-pre-wrap">
+              <LinkifiedText text={post.description} />
+            </p>
+          </div>
 
           {/* Code Snippet (StackOverflow Feature) */}
           {post.code && (
-            <div className="mt-2 w-full rounded-xl overflow-hidden border border-border/50 bg-[#0d0d1a] shadow-inner">
+            <div className="mt-2 w-full rounded-xl overflow-hidden border border-border/50 bg-[#0d0d1a] shadow-inner relative z-10">
               <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Terminal className="w-4 h-4 text-secondary" />
                   <span className="text-xs font-mono text-secondary/80">snippet.js</span>
                 </div>
                 <button
-                  onClick={() => setIsExpanded(!isExpanded)}
+                  onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
                   className="text-xs text-foreground/40 hover:text-white flex items-center gap-1"
                 >
                   {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
@@ -194,18 +221,23 @@ const PostCard = ({ post }) => {
           )}
 
           {/* Interaction Bar (Twitter Feature) */}
-          <div className="flex items-center justify-between max-w-md mt-4 text-foreground/50">
-            <div className="flex items-center gap-2 group/action hover:text-secondary transition-colors cursor-pointer">
+          <div className="flex items-center justify-between max-w-md mt-4 text-foreground/50 z-10">
+            <Link 
+              to={`/ticket/${post._id}`} 
+              className="flex items-center gap-2 group/action hover:text-secondary transition-colors cursor-pointer"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="p-2 rounded-full group-hover/action:bg-secondary/10">
-                <MessageCircle className="w-5 h-5" />
+                <MessageSquare className="w-5 h-5" />
               </div>
-              <span className="text-sm">0</span>
-            </div>
+              <span className="text-sm">{post.commentCount || 0}</span>
+            </Link>
+
 
 
 
             <div
-              onClick={() => toggleLike(post._id)}
+              onClick={(e) => { e.stopPropagation(); toggleLike(post._id); }}
               className={`flex items-center gap-2 group/action transition-colors cursor-pointer ${isLiked ? 'text-purple-500' : 'hover:text-purple-500'}`}
             >
               <div className={`p-2 rounded-full ${isLiked ? 'bg-pink-500/10' : 'group-hover/action:bg-pink-500/10'}`}>
@@ -219,13 +251,17 @@ const PostCard = ({ post }) => {
                 <Link
                   to={`/profile/${post.assignedTo.clerkId || post.assignedTo._id}`}
                   className="text-[10px] font-bold tracking-wider text-blue-400/80 hover:text-blue-400 uppercase transition-colors mr-1"
+                  onClick={(e) => e.stopPropagation()}
                 >
                   @{post.assignedTo.username}
                 </Link>
               )}
 
               <div
-                onClick={() => isDeveloper && !isOwner ? setIsStatusMenuOpen(!isStatusMenuOpen) : null}
+                onClick={(e) => { 
+                  e.stopPropagation();
+                  if (isDeveloper && !isOwner) setIsStatusMenuOpen(!isStatusMenuOpen);
+                }}
                 className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper && !isOwner ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
               >
                 <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
@@ -235,10 +271,13 @@ const PostCard = ({ post }) => {
               </div>
 
               {isDeveloper && !isOwner && isStatusMenuOpen && (
-                <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-[#0d0d1a] border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]">
+                <div 
+                  className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-[#0d0d1a] border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {post.status === 'open' && (
                     <button
-                      onClick={() => { updatePostStatus(post._id, 'in_progress'); setIsStatusMenuOpen(false); }}
+                      onClick={(e) => { e.stopPropagation(); updatePostStatus(post._id, 'in_progress'); setIsStatusMenuOpen(false); }}
                       className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-transparent hover:border-blue-500/20 rounded-lg transition-colors"
                     >
                       Take Issue
@@ -247,13 +286,13 @@ const PostCard = ({ post }) => {
                   {post.status === 'in_progress' && (
                     <>
                       <button
-                        onClick={() => { updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                        onClick={(e) => { e.stopPropagation(); updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
                       >
                         Resolve
                       </button>
                       <button
-                        onClick={() => { updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
+                        onClick={(e) => { e.stopPropagation(); updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
                       >
                         Critical

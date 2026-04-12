@@ -1,5 +1,6 @@
 import { Ticket } from "../models/ticket.model.js";
 import { User } from "../models/user.model.js";
+import { Comment } from "../models/comment.model.js";
 
 // @desc    Get all tickets with user data
 // @route   GET /api/tickets
@@ -9,7 +10,31 @@ export const getAllTickets = async (req, res) => {
             .populate("userId", "fullname imageUrl clerkId role username")
             .populate("assignedTo", "fullname imageUrl clerkId role username")
             .sort({ createdAt: -1 });
-        res.status(200).json(tickets);
+
+        const ticketsWithCounts = await Promise.all(tickets.map(async (ticket) => {
+            const commentCount = await Comment.countDocuments({ ticketId: ticket._id });
+            return { ...ticket.toObject(), commentCount };
+        }));
+
+        res.status(200).json(ticketsWithCounts);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+// @desc    Get single ticket by ID
+// @route   GET /api/tickets/:id
+export const getTicketById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ticket = await Ticket.findById(id)
+            .populate("userId", "fullname imageUrl clerkId role username")
+            .populate("assignedTo", "fullname imageUrl clerkId role username");
+        
+        if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+        
+        const commentCount = await Comment.countDocuments({ ticketId: id });
+        res.status(200).json({ ...ticket.toObject(), commentCount });
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }
@@ -83,7 +108,13 @@ export const getProfileTickets = async (req, res) => {
             .populate("userId", "fullname imageUrl clerkId role username")
             .populate("assignedTo", "fullname imageUrl clerkId role username")
             .sort({ createdAt: -1 });
-        res.status(200).json(tickets);
+
+        const ticketsWithCounts = await Promise.all(tickets.map(async (ticket) => {
+            const commentCount = await Comment.countDocuments({ ticketId: ticket._id });
+            return { ...ticket.toObject(), commentCount };
+        }));
+
+        res.status(200).json(ticketsWithCounts);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }

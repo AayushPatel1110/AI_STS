@@ -20,6 +20,7 @@ const LinkifiedText = ({ text }) => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-primary font-bold hover:text-primary/80 hover:no-underline break-all transition-all bg-primary/20 px-1 rounded-md"
+              onClick={(e) => e.stopPropagation()}
             >
               {part}
             </a>

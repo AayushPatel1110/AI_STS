@@ -15,6 +15,10 @@ const commentSchema = new mongoose.Schema({
         ref: "Ticket",
         required: true,
     },
+    authorLiked: {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true }
 );
 
