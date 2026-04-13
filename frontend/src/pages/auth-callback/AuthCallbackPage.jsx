@@ -16,7 +16,7 @@ const AuthCallbackPage = () => {
 
     const syncUser = async () => {
       try {
-        await axiosInstance.post('auth/callback', {
+        await axiosInstance.post('auth/sso-callback', {
           id: user.id,
           firstName: user.firstName,
           lastName: user.lastName,
