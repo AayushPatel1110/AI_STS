@@ -6,10 +6,10 @@ import { protectRoute } from "../middleware/auth.middleware.js";
 const router = Router();
 
 router.get("/",  getAllTickets);
-router.get("/:id", getTicketById);
 router.post("/create", requireAuth(), createTicket);
 router.patch("/:id/like", requireAuth(), toggleLike);
 router.get("/profile/:userId", getProfileTickets);
+router.get("/:id", getTicketById);
 router.delete("/:id", requireAuth(), deleteTicket);
 router.put("/:id", requireAuth(), updateTicket);
 router.patch("/:id/status", requireAuth(), updateTicketStatus);

@@ -91,8 +91,8 @@ export const usePostStore = create((set, get) => ({
 
     toggleLike: async (postId) => {
         const state = get();
-        const currentPost = state.posts.find(p => p._id === postId) || state.profilePosts.find(p => p._id === postId);
-        if (!currentPost) return;
+        const postToLike = state.posts.find(p => p._id === postId) || state.profilePosts.find(p => p._id === postId) || (state.currentPost?._id === postId ? state.currentPost : null);
+        if (!postToLike) return;
 
         // Note: For a true optimistic update we'd need the current user's ID
         // But even just updating the store with the response data is better with mapped updates.
@@ -128,7 +128,7 @@ export const usePostStore = create((set, get) => ({
     },
 
     fetchPostById: async (postId) => {
-        set({ loading: true, error: null });
+        set({ loading: true, error: null, currentPost: null });
         try {
             const response = await axiosInstance.get(`tickets/${postId}`);
             set({ currentPost: response.data, loading: false });
