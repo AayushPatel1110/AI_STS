@@ -1,8 +1,9 @@
 import React from 'react';
-import { Home, Compass, Bell, Mail, User, PlusCircle, MessageSquare } from 'lucide-react';
+import { Home, Compass, Bell, Mail, User, PlusCircle, MessageSquare, Briefcase } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@clerk/clerk-react';
+import { useUserStore } from '@/store/useUserStore';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -14,6 +15,18 @@ const navItems = [
 
 const Sidebar = () => {
   const { isSignedIn } = useAuth();
+  const { authUser } = useUserStore();
+
+  const developerItem = { icon: Briefcase, label: 'MyPicks', path: '/mypicks' };
+
+  // Insert MyPicks after Explore if developer
+  const items = authUser?.role === 'developer'
+    ? [
+        ...navItems.slice(0, 2),
+        developerItem,
+        ...navItems.slice(2)
+      ]
+    : navItems;
 
   return (
     <div className="flex flex-col h-full py-6 gap-8">
@@ -22,7 +35,7 @@ const Sidebar = () => {
 
       {/* Nav Items */}
       <nav className="flex flex-col gap-2 flex-grow">
-        {navItems.map((item) => (
+        {items.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
