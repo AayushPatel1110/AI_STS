@@ -56,7 +56,7 @@ const MainLayout = ({ children }) => {
                 const likesA = a.likes?.length || 0;
                 const likesB = b.likes?.length || 0;
                 if (likesB !== likesA) return likesB - likesA;
-                
+
                 return new Date(b.createdAt) - new Date(a.createdAt);
               })
               .slice(0, 10)
@@ -120,20 +120,20 @@ const PriorityItem = ({ post }) => {
   const getStatusInfo = (status) => {
     switch (status) {
       case 'in_progress':
-        return { color: 'bg-yellow-500', label: 'In Progress' };
+        return { color: 'bg-yellow-500', label: 'In Progress', bgClass: 'bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-50' };
       case 'resolved':
-        return { color: 'bg-green-500', label: 'Resolved' };
+        return { color: 'bg-green-500', label: 'Resolved', bgClass: 'bg-green-500/10 hover:bg-green-500/20 text-green-50' };
       case 'critical':
-        return { color: 'bg-red-500', label: 'Critical' };
+        return { color: 'bg-red-500', label: 'Critical', bgClass: 'bg-red-500/10 hover:bg-red-500/20 text-red-50' };
       default:
-        return { color: 'bg-zinc-400', label: 'Open' };
+        return { color: 'bg-zinc-400', label: 'Open', bgClass: '' };
     }
   };
 
   const status = getStatusInfo(post.status);
 
   return (
-    <div className="flex flex-col hover:bg-white/5 p-2 rounded-lg cursor-pointer transition-colors group">
+    <div className={`flex flex-col p-2 my-1 rounded-lg cursor-pointer transition-colors group border border-transparent hover:border-white/10 ${status.bgClass}`}>
       <div className="flex justify-between items-start gap-2">
         <div className="flex flex-col flex-1 min-w-0">
           <span className="text-sm font-bold text-primary truncate group-hover:text-primary/80">
