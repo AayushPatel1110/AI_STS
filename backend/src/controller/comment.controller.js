@@ -1,6 +1,7 @@
 import { Comment } from "../models/comment.model.js";
 import { Ticket } from "../models/ticket.model.js";
 import { User } from "../models/user.model.js";
+import { Notification } from "../models/notification.model.js";
 
 export const createComment = async (req, res) => {
     try {
@@ -32,6 +33,17 @@ export const createComment = async (req, res) => {
 
         // Populate user info for the response
         const populatedComment = await Comment.findById(newComment._id).populate("userId", "fullname username imageUrl role clerkId");
+
+        // Notification logic for Ticket Author
+        if (ticket.userId.toString() !== user._id.toString()) {
+            await Notification.create({
+                recipientId: ticket.userId,
+                senderId: user._id,
+                type: "comment",
+                ticketId: ticket._id,
+                message: "commented on your issue."
+            });
+        }
 
         res.status(201).json(populatedComment);
     } catch (error) {
@@ -79,6 +91,16 @@ export const toggleAuthorLike = async (req, res) => {
 
         comment.authorLiked = !comment.authorLiked;
         await comment.save();
+
+        if (comment.authorLiked && comment.userId.toString() !== user._id.toString()) {
+            await Notification.create({
+                recipientId: comment.userId,
+                senderId: user._id,
+                type: "like",
+                ticketId: ticket._id,
+                message: "the author liked your comment."
+            });
+        }
 
         res.status(200).json(comment);
     } catch (error) {

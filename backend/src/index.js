@@ -7,6 +7,7 @@ import ticketRoutes from './Routes/ticket.route.js';
 import commentRoutes from './Routes/comment.route.js';
 import statsRoutes from './Routes/stats.route.js';
 import messageRoutes from './Routes/message.route.js';
+import notificationRoutes from './Routes/notification.route.js';
 import { connectDB } from './lib/db.js';
 import { clerkMiddleware } from '@clerk/express';
 import cors from 'cors';
@@ -30,6 +31,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/tickets', ticketRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.get('/', (req, res) => res.json({ message: "API is running. Use /api/health for more info." }));
 
 app.use('/api/stats', statsRoutes);

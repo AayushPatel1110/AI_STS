@@ -1,6 +1,7 @@
 import { Ticket } from "../models/ticket.model.js";
 import { User } from "../models/user.model.js";
 import { Comment } from "../models/comment.model.js";
+import { Notification } from "../models/notification.model.js";
 
 // @desc    Get all tickets with user data
 // @route   GET /api/tickets
@@ -87,6 +88,17 @@ export const toggleLike = async (req, res) => {
             ticket.likes = ticket.likes.filter(id => id !== clerkId);
         } else {
             ticket.likes.push(clerkId);
+            
+            // Notification logic
+            if (ticket.userId.toString() !== user._id.toString()) {
+                await Notification.create({
+                    recipientId: ticket.userId,
+                    senderId: user._id,
+                    type: "like",
+                    ticketId: ticket._id,
+                    message: "liked your issue."
+                });
+            }
         }
 
         await ticket.save();
@@ -203,6 +215,19 @@ export const updateTicketStatus = async (req, res) => {
 
         ticket.status = status;
         await ticket.save();
+
+        if (ticket.userId.toString() !== user._id.toString()) {
+            let message = `updated the status of your issue to ${status.replace('_', ' ')}.`;
+            if (status === 'in_progress') message = "picked up your issue and is now working on it.";
+            
+            await Notification.create({
+                recipientId: ticket.userId,
+                senderId: user._id,
+                type: "status_update",
+                ticketId: ticket._id,
+                message
+            });
+        }
 
         const populatedTicket = await Ticket.findById(id)
             .populate("userId", "fullname imageUrl clerkId role username")

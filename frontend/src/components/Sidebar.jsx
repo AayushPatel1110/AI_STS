@@ -4,6 +4,7 @@ import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@clerk/clerk-react';
 import { useUserStore } from '@/store/useUserStore';
+import { useNotificationStore } from '@/store/useNotificationStore';
 
 const navItems = [
   { icon: Home, label: 'Home', path: '/' },
@@ -16,6 +17,13 @@ const navItems = [
 const Sidebar = () => {
   const { isSignedIn } = useAuth();
   const { authUser } = useUserStore();
+  const { unreadCount, fetchNotifications } = useNotificationStore();
+
+  React.useEffect(() => {
+    if (isSignedIn) {
+      fetchNotifications();
+    }
+  }, [isSignedIn, fetchNotifications]);
 
   const developerItem = { icon: Briefcase, label: 'MyPicks', path: '/mypicks' };
 
@@ -46,8 +54,13 @@ const Sidebar = () => {
               }`
             }
           >
-            <item.icon className="w-6 h-6" />
-            <span className="text-lg hidden xl:block">{item.label}</span>
+            <div className="relative">
+              <item.icon className="w-6 h-6" />
+              {item.label === 'Notifications' && unreadCount > 0 && (
+                <div className="absolute top-0 right-0 w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] border-2 border-background" />
+              )}
+            </div>
+            <span className="text-lg hidden xl:block flex-1">{item.label}</span>
           </NavLink>
         ))}
       </nav>
