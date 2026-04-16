@@ -7,10 +7,12 @@ import { Notification } from "../models/notification.model.js";
 // @route   GET /api/tickets
 export const getAllTickets = async (req, res) => {
     try {
-        const tickets = await Ticket.find()
-            .populate("userId", "fullname imageUrl clerkId role username")
+        const ticketsData = await Ticket.find()
+            .populate("userId", "fullname imageUrl clerkId role username isDeleted")
             .populate("assignedTo", "fullname imageUrl clerkId role username")
             .sort({ createdAt: -1 });
+
+        const tickets = ticketsData.filter(ticket => ticket.userId && !ticket.userId.isDeleted);
 
         const ticketsWithCounts = await Promise.all(tickets.map(async (ticket) => {
             const commentCount = await Comment.countDocuments({ ticketId: ticket._id });
@@ -96,7 +98,7 @@ export const toggleLike = async (req, res) => {
                     senderId: user._id,
                     type: "like",
                     ticketId: ticket._id,
-                    message: "liked your issue."
+                    message: "reposted your issue."
                 });
             }
         }

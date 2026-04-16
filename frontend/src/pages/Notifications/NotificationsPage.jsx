@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import MainLayout from '@/components/MainLayout';
 import TopBar from '@/components/TopBar';
-import { Bell, Heart, MessageCircle, Activity, Loader2, CheckCircle2 } from 'lucide-react';
+import { Bell, Repeat, MessageCircle, Activity, Loader2, CheckCircle2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNotificationStore } from '@/store/useNotificationStore';
 import { formatRelativeTime } from '@/lib/utils';
@@ -75,7 +75,7 @@ const NotificationItem = ({ notification }) => {
   const getIconAndColor = (type) => {
     switch(type) {
       case 'like':
-        return { icon: Heart, color: 'text-pink-500', bg: 'bg-pink-500/10' };
+        return { icon: Repeat, color: 'text-green-500', bg: 'bg-green-500/10' };
       case 'comment':
         return { icon: MessageCircle, color: 'text-blue-500', bg: 'bg-blue-500/10' };
       case 'status_update':

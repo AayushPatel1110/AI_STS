@@ -13,13 +13,29 @@ export const protectRoute = async (req, res, next) => {
 export const requireAdmin = async (req, res, next) => {
     try {
         const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
-        const isAdmin = process.env.Admin_Email === authState?.sessionClaims?.email;
-        if (!isAdmin) {
+        let user = await User.findOne({ clerkId: authState?.userId });
+        
+        // Auto-upgrade if email matches but role isn't admin
+        if (user && user.email === process.env.ADMIN_EMAIL && user.role !== "admin") {
+            console.log("Auto-upgrading user to admin:", user.email);
+            user.role = "admin";
+            await user.save();
+        }
+
+        console.log("Admin Check Middleware:", {
+            userId: authState?.userId,
+            foundUser: user ? user.fullname : "None",
+            role: user ? user.role : "None",
+            email: user ? user.email : "None"
+        });
+
+        if (!user || user.role !== "admin") {
             res.status(403).json({ message: "Forbidden. You must be an administrator." });
             return;
         }
         next();
     } catch (error) {
+        console.error("Error in requireAdmin:", error);
         res.status(500).json({ message: "Internal server error." });
     }
 }

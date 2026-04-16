@@ -84,14 +84,14 @@ const PostCard = ({ post }) => {
   };
 
   return (
-    <Card 
+    <Card
       className="border-b border-border/50 rounded-none bg-transparent hover:bg-white/[0.02] transition-colors group cursor-pointer"
       onClick={handleCardClick}
     >
       <CardContent className="p-4 flex gap-4">
         {/* Avatar Area */}
         <div className="flex flex-col items-center">
-          <Link 
+          <Link
             to={`/profile/${post.userId?.clerkId || post.userId?._id}`}
             onClick={(e) => e.stopPropagation()}
           >
@@ -162,7 +162,7 @@ const PostCard = ({ post }) => {
                       </div>
                       <div className="grid gap-2">
                         <label htmlFor="code" className="text-sm font-medium flex items-center gap-2">
-                          <Terminal className="w-4 h-4" /> Code Snippet
+                          <Terminal className="w-4 h-4 " /> Code Snippet
                         </label>
                         <textarea
                           id="code"
@@ -201,8 +201,8 @@ const PostCard = ({ post }) => {
             <div className="mt-2 w-full rounded-xl overflow-hidden border border-border/50 bg-[#080812] shadow-inner relative z-10">
               <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
                 <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-secondary" />
-                  <span className="text-xs font-mono text-secondary/80">snippet.js</span>
+                  <Terminal className="w-4 h-4 text-primary/60" />
+                  <span className="text-xs font-mono text-primary/60">snippet.js</span>
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
@@ -222,8 +222,8 @@ const PostCard = ({ post }) => {
 
           {/* Interaction Bar (Twitter Feature) */}
           <div className="flex items-center justify-between max-w-md mt-6 text-foreground/50 z-10 relative">
-            <Link 
-              to={`/ticket/${post._id}`} 
+            <Link
+              to={`/ticket/${post._id}`}
               className="flex items-center gap-2 group/action hover:text-secondary transition-colors cursor-pointer"
               onClick={(e) => e.stopPropagation()}
             >
@@ -258,7 +258,7 @@ const PostCard = ({ post }) => {
               )}
 
               <div
-                onClick={(e) => { 
+                onClick={(e) => {
                   e.stopPropagation();
                   if (isDeveloper && !isOwner) setIsStatusMenuOpen(!isStatusMenuOpen);
                 }}
@@ -271,7 +271,7 @@ const PostCard = ({ post }) => {
               </div>
 
               {isDeveloper && !isOwner && isStatusMenuOpen && (
-                <div 
+                <div
                   className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-card border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]"
                   onClick={(e) => e.stopPropagation()}
                 >

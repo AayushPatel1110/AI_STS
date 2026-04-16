@@ -4,25 +4,32 @@ import { Loader } from 'lucide-react'
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
+import { useUserStore } from '@/store/useUserStore';
 
 const AuthCallbackPage = () => {
-
   const { isLoaded, user } = useUser();
+  const { getAuthUser } = useUserStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-
     if (!isLoaded || !user) return;
 
     const syncUser = async () => {
       try {
-        await axiosInstance.post('auth/sso-callback', {
+        const syncPayload = {
           id: user.id,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          firstName: user.firstName || "",
+          lastName: user.lastName || "",
           imageUrl: user.imageUrl,
-        });
-
+          email: user.primaryEmailAddress?.emailAddress || user.emailAddresses[0]?.emailAddress || "",
+        };
+        
+        console.log("Syncing user with email:", syncPayload.email);
+        
+        await axiosInstance.post('auth/sso-callback', syncPayload);
+        
+        // Refetch user data immediately to get the new role (admin/dev)
+        await getAuthUser(user.id);
       } catch (error) {
         console.error("Error in auth callback", error);
       } finally {
@@ -30,7 +37,7 @@ const AuthCallbackPage = () => {
       }
     };
     syncUser();
-  }, [isLoaded, user, navigate]);
+  }, [isLoaded, user, navigate, getAuthUser]);
 
 
   return (

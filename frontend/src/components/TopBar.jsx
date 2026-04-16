@@ -36,7 +36,7 @@ const TopBar = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-full text-foreground/60 hover:text-primary transition-colors bg-white/5 hover:bg-white/10 border border-white/10"
+            className="p-2 rounded-xl text-foreground/60 hover:text-primary transition-colors bg-foreground/5 hover:bg-foreground/10 border border-border/50"
           >
             {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
@@ -65,10 +65,10 @@ const TopBar = () => {
           <SignedOut>
             {/* Clerk's native email sign-in popup */}
             <SignInButton mode="modal" forceRedirectUrl="/auth-callback" signUpForceRedirectUrl="/auth-callback">
-              <button className="relative flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] active:scale-95 group overflow-hidden">
+              <button className="relative flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] active:scale-95 group overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Mail className="w-4 h-4 text-white/80 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-semibold text-white/90 relative z-10 tracking-wide text-sm">Sign In</span>
+                <Mail className="w-4 h-4 text-foreground/80 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                <span className="font-bold text-foreground/90 relative z-10 tracking-wide text-xs uppercase">Sign In</span>
               </button>
             </SignInButton>
 
