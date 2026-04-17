@@ -30,18 +30,18 @@ const Sidebar = () => {
 
   // Insert items based on role
   let items = [...navItems];
-  
+
   if (authUser?.role === 'developer' || authUser?.role === 'admin') {
     items.splice(2, 0, developerItem);
   }
 
   const isAdmin = authUser?.role === 'admin' || authUser?.email === import.meta.env.VITE_ADMIN_EMAIL;
-  
+
   console.log("Sidebar Auth Check:", {
     email: authUser?.email,
     role: authUser?.role,
     envAdminMail: import.meta.env.VITE_ADMIN_EMAIL,
-    isAdminResult: isAdmin 
+    isAdminResult: isAdmin
   });
 
   if (isAdmin) {

@@ -31,7 +31,7 @@ const PostCard = ({ post }) => {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
 
   const isOwner = currentUser?.id && post.userId?.clerkId && currentUser.id === post.userId.clerkId;
-  const isDeveloper = authUser?.role === 'developer';
+  const isDeveloper = authUser?.role === 'developer' || authUser?.role === 'admin';
 
   const getStatusStyles = (status) => {
     switch (status) {
@@ -118,9 +118,9 @@ const PostCard = ({ post }) => {
 
                 </Link>
                 <label htmlFor="username" className="text-sm font-medium text-gray-500">@{post.userId?.username}</label>
-                {post.userId?.role === 'developer' && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-primary/20 text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] border border-primary/50 relative overflow-hidden uppercase tracking-wider">
-                    Dev
+                {(post.userId?.role === 'developer' || post.userId?.role === 'admin') && (
+                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${post.userId?.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-primary/20 text-primary border-primary/50 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]'} border relative overflow-hidden uppercase tracking-wider`}>
+                    {post.userId?.role === 'admin' ? 'Admin' : 'Dev'}
                   </span>
                 )}
                 <span className="text-foreground/40 text-lg whitespace-nowrap">· {formatRelativeTime(post.createdAt)}</span>
@@ -260,9 +260,9 @@ const PostCard = ({ post }) => {
               <div
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (isDeveloper && !isOwner) setIsStatusMenuOpen(!isStatusMenuOpen);
+                  if (isDeveloper) setIsStatusMenuOpen(!isStatusMenuOpen);
                 }}
-                className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper && !isOwner ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
+                className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
               >
                 <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
                 <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
@@ -270,14 +270,23 @@ const PostCard = ({ post }) => {
                 </span>
               </div>
 
-              {isDeveloper && !isOwner && isStatusMenuOpen && (
+              {isDeveloper && isStatusMenuOpen && (
                 <div
                   className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-card border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {post.status === 'open' && (
                     <button
-                      onClick={(e) => { e.stopPropagation(); updatePostStatus(post._id, 'in_progress'); setIsStatusMenuOpen(false); }}
+                      onClick={async (e) => { 
+                        e.stopPropagation(); 
+                        try {
+                          await updatePostStatus(post._id, 'in_progress'); 
+                          toast.success("Issue taken successfully!");
+                        } catch (err) {
+                          toast.error("Failed to take issue.");
+                        }
+                        setIsStatusMenuOpen(false); 
+                      }}
                       className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-transparent hover:border-blue-500/20 rounded-lg transition-colors"
                     >
                       Take Issue
@@ -286,13 +295,31 @@ const PostCard = ({ post }) => {
                   {post.status === 'in_progress' && (
                     <>
                       <button
-                        onClick={(e) => { e.stopPropagation(); updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                        onClick={async (e) => { 
+                          e.stopPropagation(); 
+                          try {
+                            await updatePostStatus(post._id, 'resolved'); 
+                            toast.success("Issue marked as resolved!");
+                          } catch (err) {
+                            toast.error("Failed to update status.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
                       >
                         Resolve
                       </button>
                       <button
-                        onClick={(e) => { e.stopPropagation(); updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
+                        onClick={async (e) => { 
+                          e.stopPropagation(); 
+                          try {
+                            await updatePostStatus(post._id, 'critical'); 
+                            toast.success("Issue marked as critical!");
+                          } catch (err) {
+                            toast.error("Failed to update status.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
                       >
                         Critical
@@ -302,13 +329,29 @@ const PostCard = ({ post }) => {
                   {post.status === 'resolved' && (
                     <>
                       <button
-                        onClick={() => { updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                        onClick={async () => { 
+                          try {
+                            await updatePostStatus(post._id, 'resolved'); 
+                            toast.success("Issue marked as resolved!");
+                          } catch (err) {
+                            toast.error("Failed to update status.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
                       >
                         Resolve
                       </button>
                       <button
-                        onClick={() => { updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
+                        onClick={async () => { 
+                          try {
+                            await updatePostStatus(post._id, 'critical'); 
+                            toast.success("Issue marked as critical!");
+                          } catch (err) {
+                            toast.error("Failed to update status.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
                       >
                         Critical
@@ -318,13 +361,29 @@ const PostCard = ({ post }) => {
                   {post.status === 'critical' && (
                     <>
                       <button
-                        onClick={() => { updatePostStatus(post._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                        onClick={async () => { 
+                          try {
+                            await updatePostStatus(post._id, 'resolved'); 
+                            toast.success("Issue marked as resolved!");
+                          } catch (err) {
+                            toast.error("Failed to update status.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
                       >
                         Resolve
                       </button>
                       <button
-                        onClick={() => { updatePostStatus(post._id, 'critical'); setIsStatusMenuOpen(false); }}
+                        onClick={async () => { 
+                          try {
+                            await updatePostStatus(post._id, 'critical'); 
+                            toast.success("Issue marked as critical!");
+                          } catch (err) {
+                            toast.error("Failed to update status.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
                       >
                         Critical

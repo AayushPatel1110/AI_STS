@@ -117,9 +117,9 @@ const ProfilePage = () => {
               <div>
                 <h1 className="text-3xl font-extrabold tracking-tight text-white mb-1 flex items-center gap-3">
                   {displayUser?.fullname}
-                  {displayUser?.role === 'developer' && (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/20 text-primary drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] border border-primary/50 relative overflow-hidden">
-                      Developer
+                  {(displayUser?.role === 'developer' || displayUser?.role === 'admin') && (
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${displayUser?.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-primary/20 text-primary border-primary/50 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]'} border relative overflow-hidden`}>
+                      {displayUser?.role === 'admin' ? 'Admin' : 'Developer'}
                     </span>
                   )}
                 </h1>

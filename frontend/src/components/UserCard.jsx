@@ -20,9 +20,9 @@ const UserCard = ({ user }) => {
               <h3 className="font-bold text-white group-hover:text-primary transition-colors">
                 {user.fullname}
               </h3>
-              {user.role === 'developer' && (
-                <span className="px-1.5 py-0.5 rounded-[4px] text-[10px] font-bold bg-primary/20 text-primary border border-primary/50 uppercase tracking-tighter">
-                  Dev
+              {(user.role === 'developer' || user.role === 'admin') && (
+                <span className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-bold ${user.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50' : 'bg-primary/20 text-primary border-primary/50'} border uppercase tracking-tighter`}>
+                  {user.role === 'admin' ? 'Admin' : 'Dev'}
                 </span>
               )}
             </div>

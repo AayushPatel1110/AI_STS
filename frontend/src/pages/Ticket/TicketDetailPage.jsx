@@ -22,7 +22,7 @@ const TicketDetailPage = () => {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
 
-  const isDeveloper = authUser?.role === 'developer';
+  const isDeveloper = authUser?.role === 'developer' || authUser?.role === 'admin';
   const isOwner = currentPost?.userId?._id === authUser?._id || currentPost?.userId?.clerkId === authUser?.clerkId;
 
   const getStatusStyles = (status) => {
@@ -119,8 +119,8 @@ const TicketDetailPage = () => {
                 )}
 
                 <div
-                  onClick={() => isDeveloper && !isOwner ? setIsStatusMenuOpen(!isStatusMenuOpen) : null}
-                  className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper && !isOwner ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
+                  onClick={() => isDeveloper ? setIsStatusMenuOpen(!isStatusMenuOpen) : null}
+                  className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
                 >
                   <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
                   <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
@@ -128,11 +128,19 @@ const TicketDetailPage = () => {
                   </span>
                 </div>
 
-                {isDeveloper && !isOwner && isStatusMenuOpen && (
+                {isDeveloper && isStatusMenuOpen && (
                   <div className="absolute top-full right-0 mt-2 flex flex-col gap-1.5 bg-card border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]">
                     {currentPost.status === 'open' && (
                       <button
-                        onClick={() => { updatePostStatus(currentPost._id, 'in_progress'); setIsStatusMenuOpen(false); }}
+                        onClick={async () => { 
+                          try {
+                            await updatePostStatus(currentPost._id, 'in_progress'); 
+                            toast.success("Issue taken successfully!");
+                          } catch (err) {
+                            toast.error("Failed to take issue.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
                         className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-transparent hover:border-blue-500/20 rounded-lg transition-colors"
                       >
                         Take Issue
@@ -141,13 +149,29 @@ const TicketDetailPage = () => {
                     {(currentPost.status === 'in_progress' || currentPost.status === 'resolved' || currentPost.status === 'critical') && (
                       <>
                         <button
-                          onClick={() => { updatePostStatus(currentPost._id, 'resolved'); setIsStatusMenuOpen(false); }}
+                          onClick={async () => { 
+                            try {
+                              await updatePostStatus(currentPost._id, 'resolved'); 
+                              toast.success("Issue marked as resolved!");
+                            } catch (err) {
+                              toast.error("Failed to update status.");
+                            }
+                            setIsStatusMenuOpen(false); 
+                          }}
                           className={`w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors ${currentPost.status === 'resolved' ? 'border-green-500/50' : ''}`}
                         >
                           Resolve
                         </button>
                         <button
-                          onClick={() => { updatePostStatus(currentPost._id, 'critical'); setIsStatusMenuOpen(false); }}
+                          onClick={async () => { 
+                            try {
+                              await updatePostStatus(currentPost._id, 'critical'); 
+                              toast.success("Issue marked as critical!");
+                            } catch (err) {
+                              toast.error("Failed to update status.");
+                            }
+                            setIsStatusMenuOpen(false); 
+                          }}
                           className={`w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors ${currentPost.status === 'critical' ? 'border-red-500/50' : ''}`}
                         >
                           Critical
@@ -277,9 +301,9 @@ const TicketDetailPage = () => {
                     </Link>
                     <span className="text-xs text-foreground/40 font-mono">@{comment.userId?.username}</span>
                     <div className="flex items-center gap-1">
-                      {comment.userId?.role === 'developer' && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-primary/20 text-primary border border-primary/50 uppercase tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.3)]">
-                          Dev
+                      {(comment.userId?.role === 'developer' || comment.userId?.role === 'admin') && (
+                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold ${comment.userId?.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50' : 'bg-primary/20 text-primary border-primary/50'} border uppercase tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.3)]`}>
+                          {comment.userId?.role === 'admin' ? 'Admin' : 'Dev'}
                         </span>
                       )}
                       {comment.userId?.clerkId === currentPost?.userId?.clerkId && (

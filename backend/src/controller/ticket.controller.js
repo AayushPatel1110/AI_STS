@@ -200,11 +200,14 @@ export const updateTicketStatus = async (req, res) => {
         const user = await User.findOne({ clerkId });
         const ticket = await Ticket.findById(id);
 
+        console.log("Update Status Request:", { clerkId, userRole: user?.role, ticketId: id, newStatus: status });
+
         if (!ticket) return res.status(404).json({ message: "Ticket not found" });
 
-        // User must be a developer
-        if (!user || user.role !== 'developer') {
-            return res.status(403).json({ message: "Forbidden. Only developers can change ticket status." });
+        // User must be a developer or admin
+        if (!user || (user.role !== 'developer' && user.role !== 'admin')) {
+            console.log("Status update forbidden for user:", user?.clerkId, "with role:", user?.role);
+            return res.status(403).json({ message: "Forbidden. Only developers and admins can change ticket status." });
         }
 
         if (!["open", "in_progress", "resolved", "critical"].includes(status)) {
