@@ -17,9 +17,8 @@ const AuthCallbackPage = () => {
     const syncUser = async () => {
       try {
         const syncPayload = {
-          id: user.id,
-          firstName: user.firstName || "",
-          lastName: user.lastName || "",
+          clerkId: user.id,
+          fullname: user.fullName || `${user.firstName || ""} ${user.lastName || ""}`.trim() || "User",
           imageUrl: user.imageUrl,
           email: user.primaryEmailAddress?.emailAddress || user.emailAddresses[0]?.emailAddress || "",
         };

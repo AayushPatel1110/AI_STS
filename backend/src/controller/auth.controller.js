@@ -1,9 +1,9 @@
 import { User } from "../models/user.model.js";
 export const authCallback = async (req, res) => {
     try {
-        const { id, firstName, lastName, imageUrl, email } = req.body;
-
-        let user = await User.findOne({ clerkId: id });
+        const { clerkId, fullname, imageUrl, email } = req.body;
+        
+        let user = await User.findOne({ clerkId });
         const isAdmin = email && process.env.ADMIN_EMAIL && 
                         email.trim().toLowerCase() === process.env.ADMIN_EMAIL.trim().toLowerCase();
         
@@ -15,10 +15,10 @@ export const authCallback = async (req, res) => {
 
         if (!user) {
             user = await User.create({
-                clerkId: id,
-                fullname: `${firstName} ${lastName}`,
-                imageUrl: imageUrl,
-                email: email,
+                clerkId,
+                fullname,
+                imageUrl,
+                email,
                 role: isAdmin ? "admin" : "user",
             });
         } else {
