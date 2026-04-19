@@ -13,8 +13,8 @@ const SignInOAuthButton = () => {
     <button
       onClick={() => signIn.authenticateWithRedirect({
         strategy: 'oauth_google',
-        redirectUrl: `/sso-callback`,
-        redirectUrlComplete: `/auth-callback`
+        redirectUrl: `${window.location.origin}/sso-callback`,
+        redirectUrlComplete: `${window.location.origin}/auth-callback`
       })}
       className="relative flex items-center justify-center gap-3 px-6 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-primary/30 transition-all duration-300 shadow-[0_0_15px_rgba(0,0,0,0.5)] hover:shadow-[0_0_20px_rgba(168,85,247,0.2)] active:scale-95 group overflow-hidden"
     >

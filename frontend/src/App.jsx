@@ -8,6 +8,7 @@ import MessagesPage from './pages/Messages/MessagesPage';
 import ProfilePage from './pages/Profile/ProfilePage';
 import TicketDetailPage from './pages/Ticket/TicketDetailPage';
 import AuthCallbackPage from './pages/auth-callback/AuthCallbackPage';
+import SSOCallbackPage from './pages/auth-callback/SSOCallbackPage';
 import MyPicksPage from './pages/MyPicks/MyPicksPage';
 import AdminPage from './pages/Admin/AdminPage';
 import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
@@ -39,8 +40,7 @@ function App() {
         <Route path='/mypicks' element={<MyPicksPage />} />
         <Route path='/admin' element={<AdminPage />} />
         
-        <Route path='/sso-callback' 
-        element={<AuthenticateWithRedirectCallback  signInForceRedirectUrl={'/auth-callback'}/>} />
+        <Route path='/sso-callback' element={<SSOCallbackPage />} />
         <Route path='/auth-callback' element={<AuthCallbackPage />} />
       </Routes>
     </>
