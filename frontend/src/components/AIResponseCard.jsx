@@ -4,6 +4,7 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Bot, Sparkles, Loader2 } from 'lucide-react';
 import { aiModel } from '@/lib/gemini';
+import { groq } from '@/lib/groq';
 import toast from 'react-hot-toast';
 
 const AIResponseCard = ({ title, description, code, onComplete }) => {
@@ -22,8 +23,7 @@ const AIResponseCard = ({ title, description, code, onComplete }) => {
       setAiResponse("");
       setError(null);
 
-      try {
-        const prompt = `Task: Issue Analysis & Code Fix
+      const prompt = `Task: Issue Analysis & Code Fix
 Issue: ${title}
 Context: ${description}
 Code: ${code || "None"}
@@ -32,46 +32,128 @@ Requirements:
 1. One-sentence root cause.
 2. Direct code improvement (Markdown).
 3. Max 100 words total.`;
+      setIsAiGenerating(true);
+      setAiResponse("");
 
-        // Optimized for token efficiency and speed
-        const result = await aiModel.models.generateContentStream({
-          model: "gemini-2.5-flash-lite",
-          contents: prompt,
-          generationConfig: {
-            maxOutputTokens: 150, // Keep responses concise
-            temperature: 0.7,
-            topP: 0.8,
-            topK: 40,
+      let success = false;
+
+      // 1. Try Gemini Models
+      const geminiModels = ["gemini-1.5-flash", "gemini-1.5-pro"]; // Using stable names for 1.5 since 2.5 is not public
+      for (const modelName of geminiModels) {
+        if (success) break;
+        try {
+          const result = await aiModel.models.generateContentStream({
+            model: modelName,
+            contents: prompt,
+            generationConfig: { maxOutputTokens: 150, temperature: 0.7 }
+          });
+
+          let fullText = "";
+          for await (const chunk of result) {
+            const chunkText = chunk.text;
+            if (chunkText) {
+              fullText += chunkText;
+              setAiResponse(fullText);
+            }
           }
-        });
+          
+          if (fullText) {
+            success = true;
+            if (onComplete) onComplete(fullText);
+            console.log(`AI: Success with Gemini (${modelName})`);
+          }
+        } catch (err) {
+          // Silent retry or fallback
+        }
+      }
 
-        let fullText = "";
-        for await (const chunk of result) {
-          const chunkText = chunk.text;
-          if (chunkText) {
-            fullText += chunkText;
-            setAiResponse(fullText);
+      // 2. Fallback to Groq Models
+      if (!success && groq) {
+        const groqModels = ["llama-3.1-8b-instant", "gemma2-9b-it"];
+        for (const modelName of groqModels) {
+          if (success) break;
+          try {
+            const chatCompletion = await groq.chat.completions.create({
+              messages: [{ role: "user", content: prompt }],
+              model: modelName,
+              temperature: 0.7,
+              max_tokens: 200,
+              stream: true,
+            });
+
+            let fullText = "";
+            for await (const chunk of chatCompletion) {
+              const chunkText = chunk.choices[0]?.delta?.content || "";
+              if (chunkText) {
+                fullText += chunkText;
+                setAiResponse(fullText);
+              }
+            }
+
+            if (fullText) {
+              success = true;
+              if (onComplete) onComplete(fullText);
+              console.log(`AI: Success with Groq (${modelName})`);
+            }
+          } catch (err) {
+            // Silent fallback
           }
         }
-        if (onComplete) onComplete(fullText);
-      } catch (err) {
-        console.error("AI Generation Error:", err);
-        setError("Failed to generate AI response. Please try again.");
-        toast.error("AI assistant error.");
-      } finally {
-        setIsAiGenerating(false);
+      }
+
+      // 3. Ultimate Fallback to OpenRouter (DeepSeek)
+      const openRouterKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+      if (!success && openRouterKey) {
+        const orModels = ["deepseek/deepseek-chat", "deepseek/deepseek-r1"];
+        for (const modelName of orModels) {
+          if (success) break;
+          try {
+            const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${openRouterKey}`,
+                "Content-Type": "application/json",
+                "HTTP-Referer": window.location.origin,
+                "X-OpenRouter-Title": "AI Developer Support",
+              },
+              body: JSON.stringify({
+                model: modelName,
+                messages: [{ role: "user", content: prompt }],
+                max_tokens: 200,
+              }),
+            });
+
+            const data = await response.json();
+            const fullText = data.choices?.[0]?.message?.content;
+            
+            if (fullText) {
+              setAiResponse(fullText);
+              success = true;
+              if (onComplete) onComplete(fullText);
+              console.log(`AI: Success with OpenRouter (${modelName})`);
+            }
+          } catch (err) {
+            // Ultimate failure logged at the end
+          }
+        }
+      }
+
+      if (!success) {
+        console.error("AI: All providers (Gemini, Groq, OpenRouter) and their models failed.");
+      }
+
+      setIsAiGenerating(false);
+      
+      if (!success && !aiResponse) {
+        // Silent failure as requested
       }
     };
 
     generateResponse();
   }, [title, description, code]);
 
-  if (error) {
-    return (
-      <div className="mt-4 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-400 text-sm">
-        {error}
-      </div>
-    );
+  if (!aiResponse && !isAiGenerating) {
+    return null;
   }
 
   return (

@@ -5,10 +5,11 @@ import MainLayout from '@/components/MainLayout';
 import TopBar from '@/components/TopBar';
 import { usePostStore } from '@/store/usePostStore';
 import { useUserStore } from '@/store/useUserStore';
-import { Loader2, MessageSquare, Repeat2, Share2, Code, ArrowLeft, Send, Trash2, CheckCircle2, Heart, Terminal, ChevronUp, ChevronDown } from 'lucide-react';
+import { Loader2, MessageSquare, Repeat2, Share2, Code, ArrowLeft, Send, Trash2, CheckCircle2, Heart, Terminal, ChevronUp, ChevronDown, Sparkles } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import LinkifiedText from '@/components/LinkifiedText';
+import AIResponseCard from '@/components/AIResponseCard';
 import { useUser, useAuth } from '@clerk/clerk-react';
 import { formatRelativeTime } from '@/lib/utils';
 
@@ -21,6 +22,7 @@ const TicketDetailPage = () => {
   const [commentText, setCommentText] = useState('');
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
+  const [showAiResponse, setShowAiResponse] = useState(false);
 
   const isDeveloper = authUser?.role === 'developer' || authUser?.role === 'admin';
   const isOwner = currentPost?.userId?._id === authUser?._id || currentPost?.userId?.clerkId === authUser?.clerkId;
@@ -244,11 +246,35 @@ const TicketDetailPage = () => {
               </div>
               <button 
                 onClick={handleShare}
-                className="p-2 rounded-full hover:bg-primary/10 hover:text-primary transition-colors ml-auto"
+                className="p-2 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
               >
                 <Share2 className="w-5 h-5" />
               </button>
+
+              {/* AI Badge Button */}
+              <div
+                onClick={() => setShowAiResponse(!showAiResponse)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ml-2 ${
+                  showAiResponse 
+                    ? 'bg-primary/20 border-primary/50 text-primary glow-pulse-primary scale-105' 
+                    : 'bg-white/5 border-white/10 text-foreground/40 hover:bg-white/10 hover:text-primary hover:border-primary/30'
+                }`}
+              >
+                <Sparkles className={`w-3.5 h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
+                <span className="text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
+                  {showAiResponse ? 'AI active' : 'Ask AI'}
+                </span>
+              </div>
             </div>
+
+            {/* AI Response Card */}
+            {showAiResponse && (
+              <AIResponseCard 
+                title={currentPost.title} 
+                description={currentPost.description} 
+                code={currentPost.code} 
+              />
+            )}
           </div>
 
           {/* Comment Input */}
