@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { MessageSquare, Repeat2, Heart, Share, Terminal, ChevronDown, ChevronUp, CheckCircle2, Trash2, Edit3 } from 'lucide-react';
+import { MessageSquare, Repeat2, Heart, Share, Terminal, ChevronDown, ChevronUp, CheckCircle2, Trash2, Edit3, Sparkles, Loader2 } from 'lucide-react';
+import AIResponseCard from './AIResponseCard';
 import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
@@ -29,6 +30,9 @@ const PostCard = ({ post }) => {
   const [editCode, setEditCode] = useState(post.code || '');
   const [isSaving, setIsSaving] = useState(false);
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+
+  // AI State
+  const [showAiResponse, setShowAiResponse] = useState(false);
 
   const isOwner = currentUser?.id && post.userId?.clerkId && currentUser.id === post.userId.clerkId;
   const isDeveloper = authUser?.role === 'developer' || authUser?.role === 'admin';
@@ -81,6 +85,11 @@ const PostCard = ({ post }) => {
 
   const handleCardClick = () => {
     navigate(`/ticket/${post._id}`);
+  };
+
+  const handleAskAI = (e) => {
+    e.stopPropagation();
+    setShowAiResponse(!showAiResponse);
   };
 
   return (
@@ -246,6 +255,7 @@ const PostCard = ({ post }) => {
               <span className="text-sm">{likeCount}</span>
             </div>
 
+
             <div className="flex items-center gap-2 relative">
               {post.assignedTo && (
                 <Link
@@ -267,6 +277,21 @@ const PostCard = ({ post }) => {
                 <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
                 <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
                   {statusStyle.label}
+                </span>
+              </div>
+
+              {/* AI Badge Button (Moved to end) */}
+              <div
+                onClick={handleAskAI}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ${
+                  showAiResponse 
+                    ? 'bg-primary/20 border-primary/50 text-primary glow-pulse-primary scale-105' 
+                    : 'bg-white/5 border-white/10 text-foreground/40 hover:bg-white/10 hover:text-primary hover:border-primary/30'
+                }`}
+              >
+                <Sparkles className={`w-3.5 h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
+                <span className="text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
+                  {showAiResponse ? 'AI active' : 'Ask AI'}
                 </span>
               </div>
 
@@ -395,6 +420,15 @@ const PostCard = ({ post }) => {
               )}
             </div>
           </div>
+
+          {/* AI Response Card */}
+          {showAiResponse && (
+            <AIResponseCard 
+              title={post.title} 
+              description={post.description} 
+              code={post.code} 
+            />
+          )}
         </div>
       </CardContent>
     </Card>
