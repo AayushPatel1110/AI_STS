@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/table';
 import Sidebar from '@/components/Sidebar';
 import TopBar from '@/components/TopBar';
+import MobileNav from '@/components/MobileNav';
 import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 
@@ -83,14 +84,14 @@ const AdminPage = () => {
     }, [tickets, ticketFilter, searchQuery]);
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans pb-10 sm:pb-0">
+        <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans pb-10 md:pb-0">
             <TopBar />
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row">
                 <aside className="hidden md:flex flex-col w-64 h-[calc(100vh-64px)] sticky top-16 border-r border-white/5 shrink-0">
                     <Sidebar />
                 </aside>
 
-                <main className="flex-1 p-4 sm:p-6 lg:p-10 space-y-8 sm:space-y-10 min-w-0 pb-20 sm:pb-10">
+                <main className="flex-1 p-4 sm:p-6 lg:p-10 space-y-8 sm:space-y-10 min-w-0 pb-20 md:pb-10">
                     <header className="flex flex-col gap-1 sm:gap-2">
                         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
                             Admin Dashboard
@@ -326,6 +327,7 @@ const AdminPage = () => {
                     </div>
                 </main>
             </div>
+            <MobileNav />
         </div>
     );
 };

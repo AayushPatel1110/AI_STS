@@ -30,12 +30,12 @@ const MainLayout = ({ children }) => {
   return (
     <div className="flex bg-background overflow-hidden max-w-7xl h-[calc(100vh-4rem)] mx-auto border-x border-border/50 relative">
       {/* Sidebar - Fixed Left */}
-      <aside className="hidden sm:flex flex-col w-20 xl:w-72 border-r border-border/50">
+      <aside className="hidden md:flex flex-col w-20 xl:w-72 border-r border-border/50">
         <Sidebar />
       </aside>
 
       {/* Main Feed - Scrollable Middle */}
-      <main className="flex-1 flex flex-col min-w-0 border-r border-border/50 pb-20 sm:pb-0">
+      <main className="flex-1 flex flex-col min-w-0 border-r border-border/50 pb-20 md:pb-0">
         <ScrollArea className="flex-1 scrollbar-hide">
           {children}
         </ScrollArea>

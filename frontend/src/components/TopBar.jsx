@@ -24,21 +24,21 @@ const TopBar = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-xl">
-      <div className="flex h-16 items-center justify-between px-6 gap-4">
+      <div className="flex h-16 items-center justify-between px-4 sm:px-6 gap-2 sm:gap-4">
         {/* Brand */}
-        <Link to="/" className="flex items-center gap-2">
-          <h1 className="text-2xl font-black italic tracking-tighter text-primary select-none">
+        <Link to="/" className="flex items-center gap-2 shrink-0">
+          <h1 className="text-xl sm:text-2xl font-black italic tracking-tighter text-primary select-none">
             Fixora
           </h1>
         </Link>
 
         {/* Auth & Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             onClick={toggleTheme}
-            className="p-2 rounded-xl text-foreground/60 hover:text-primary transition-colors bg-foreground/5 hover:bg-foreground/10 border border-border/50"
+            className="p-1.5 sm:p-2 rounded-xl text-foreground/60 hover:text-primary transition-colors bg-foreground/5 hover:bg-foreground/10 border border-border/50"
           >
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {theme === 'dark' ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
           </button>
 
           {isAdmin && (
@@ -56,24 +56,25 @@ const TopBar = () => {
               afterSignOutUrl="/"
               appearance={{
                 elements: {
-                  userButtonAvatarBox: 'w-9 h-9 border border-primary/50',
+                  userButtonAvatarBox: 'w-8 h-8 sm:w-9 sm:h-9 border border-primary/50',
                 },
               }}
             />
           </SignedIn>
 
           <SignedOut>
-            {/* Clerk's native email sign-in popup */}
-            <SignInButton mode="modal" forceRedirectUrl="/auth-callback" signUpForceRedirectUrl="/auth-callback">
-              <button className="relative flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-[0_0_20px_rgba(168,85,247,0.1)] active:scale-95 group overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <Mail className="w-4 h-4 text-foreground/80 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-bold text-foreground/90 relative z-10 tracking-wide text-xs uppercase">Sign In</span>
-              </button>
-            </SignInButton>
+            <div className="flex items-center gap-2">
+              {/* Clerk's native email sign-in popup */}
+              <SignInButton mode="modal" forceRedirectUrl="/auth-callback" signUpForceRedirectUrl="/auth-callback">
+                <button className="relative flex items-center justify-center gap-2 px-3 sm:px-5 py-2 rounded-xl bg-foreground/5 hover:bg-foreground/10 border border-border/50 hover:border-primary/30 transition-all duration-300 active:scale-95 group overflow-hidden">
+                  <Mail className="w-4 h-4 text-foreground/80 relative z-10" />
+                  <span className="font-bold text-foreground/90 relative z-10 tracking-wide text-[10px] sm:text-xs uppercase hidden xs:inline">Sign In</span>
+                </button>
+              </SignInButton>
 
-            {/* Google OAuth */}
-            <SignInOAuthButton />
+              {/* Google OAuth */}
+              <SignInOAuthButton />
+            </div>
           </SignedOut>
         </div>
       </div>
