@@ -256,13 +256,13 @@ const TicketDetailPage = () => {
                 onClick={() => setShowAiResponse(!showAiResponse)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ml-2 ${
                   showAiResponse 
-                    ? 'bg-primary/20 border-primary/50 text-primary glow-pulse-primary scale-105' 
-                    : 'bg-white/5 border-white/10 text-foreground/40 hover:bg-white/10 hover:text-primary hover:border-primary/30'
+                    ? 'bg-primary/50 border-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.5)] scale-105' 
+                    : 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20 glow-primary'
                 }`}
               >
                 <Sparkles className={`w-3.5 h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
                 <span className="text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
-                  {showAiResponse ? 'AI active' : 'Ask AI'}
+                  {showAiResponse ? 'Hide Solution' : (currentPost.aiResponse ? 'View AI Solution' : 'Ask AI')}
                 </span>
               </div>
             </div>
@@ -273,6 +273,8 @@ const TicketDetailPage = () => {
                 title={currentPost.title} 
                 description={currentPost.description} 
                 code={currentPost.code} 
+                ticketId={currentPost._id}
+                savedResponse={currentPost.aiResponse}
               />
             )}
           </div>

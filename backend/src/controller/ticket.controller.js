@@ -242,3 +242,28 @@ export const updateTicketStatus = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+export const updateAiResponse = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { aiResponse } = req.body;
+        const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
+        const clerkId = authState?.userId;
+
+        const user = await User.findOne({ clerkId });
+        const ticket = await Ticket.findById(id);
+
+        if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+
+        if (!user || (ticket.userId.toString() !== user._id.toString() && user.role !== 'admin' && user.role !== 'developer')) {
+            return res.status(403).json({ message: "Unauthorized." });
+        }
+
+        ticket.aiResponse = aiResponse;
+        await ticket.save();
+
+        res.status(200).json({ message: "AI response saved successfully", aiResponse: ticket.aiResponse });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};

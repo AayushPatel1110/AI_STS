@@ -38,6 +38,10 @@ const ticketSchema = new mongoose.Schema({
             type: String,
         }
     ],
+    aiResponse: {
+        type: String,
+        default: null,
+    },
 }, { timestamps: true }
 );
 

@@ -2,18 +2,56 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Bot, Sparkles, Loader2 } from 'lucide-react';
+import { Bot, Sparkles, Loader2, RefreshCcw, CheckCircle } from 'lucide-react';
 import { aiModel } from '@/lib/gemini';
 import { groq } from '@/lib/groq';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
-const AIResponseCard = ({ title, description, code, onComplete }) => {
+const AIResponseCard = ({ title, description, code, ticketId, savedResponse, onComplete }) => {
   const [aiResponse, setAiResponse] = useState("");
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [activeModelName, setActiveModelName] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [error, setError] = useState(null);
 
+  const handleRegenerate = () => {
+    setAiResponse("");
+    setRefreshKey(prev => prev + 1);
+  };
+
+  const handleAccept = async () => {
+    if (!ticketId || !aiResponse) return;
+
+    setIsSaving(true);
+    try {
+      const response = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/tickets/${ticketId}/ai-response`,
+        { aiResponse },
+        { withCredentials: true }
+      );
+
+      if (response.status === 200) {
+        toast.success("AI Solution accepted and saved!");
+      }
+    } catch (err) {
+      console.error("Failed to save AI response:", err);
+      toast.error("Failed to save AI solution.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   useEffect(() => {
+    // If we already have a saved response, use it and don't generate again
+    // UNLESS the user explicitly clicked regenerate (refreshKey > 0)
+    if (savedResponse && refreshKey === 0) {
+      setAiResponse(savedResponse);
+      setActiveModelName("Saved Solution");
+      return;
+    }
+
     const generateResponse = async () => {
       if (!aiModel) {
         setError("AI Assistant not configured. Please check your API key.");
@@ -39,7 +77,7 @@ Requirements:
       let success = false;
 
       // 1. Try Gemini Models (Using 2.5 Flash series as requested)
-      const geminiModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]; 
+      const geminiModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite"];
       for (const modelName of geminiModels) {
         if (success) break;
         try {
@@ -58,7 +96,7 @@ Requirements:
               setAiResponse(fullText);
             }
           }
-          
+
           if (fullText) {
             success = true;
             if (onComplete) onComplete(fullText);
@@ -129,7 +167,7 @@ Requirements:
 
             const data = await response.json();
             const fullText = data.choices?.[0]?.message?.content;
-            
+
             if (fullText) {
               setAiResponse(fullText);
               success = true;
@@ -147,14 +185,14 @@ Requirements:
       }
 
       setIsAiGenerating(false);
-      
+
       if (!success && !aiResponse) {
         // Silent failure as requested
       }
     };
 
     generateResponse();
-  }, [title, description, code]);
+  }, [title, description, code, refreshKey]);
 
   if (!aiResponse && !isAiGenerating) {
     return null;
@@ -225,6 +263,32 @@ Requirements:
         )}
         {isAiGenerating && aiResponse && <span className="cursor-blink">|</span>}
       </div>
+
+      {!isAiGenerating && aiResponse && (
+        <div className="px-5 py-4 bg-primary/5 border-t border-white/5 flex justify-end items-center gap-3">
+          <button
+            onClick={handleRegenerate}
+            disabled={isSaving}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-[10px] text-white/60 font-bold uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 group"
+          >
+            <RefreshCcw className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
+            Regenerate
+          </button>
+
+          <button
+            onClick={handleAccept}
+            disabled={isSaving}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 hover:bg-primary/30 hover:border-primary/50 text-[10px] text-primary font-bold uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 group"
+          >
+            {isSaving ? (
+              <Loader2 className="w-3 h-3 animate-spin" />
+            ) : (
+              <CheckCircle className={`w-3 h-3 ${isSaving ? '' : 'group-hover:fill-primary/20'}`} />
+            )}
+            <span>{isSaving ? "SAVING..." : "Accept Solution"}</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
