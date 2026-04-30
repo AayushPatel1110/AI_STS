@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 const AIResponseCard = ({ title, description, code, onComplete }) => {
   const [aiResponse, setAiResponse] = useState("");
   const [isAiGenerating, setIsAiGenerating] = useState(false);
+  const [activeModelName, setActiveModelName] = useState("");
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -37,11 +38,12 @@ Requirements:
 
       let success = false;
 
-      // 1. Try Gemini Models
-      const geminiModels = ["gemini-1.5-flash", "gemini-1.5-pro"]; // Using stable names for 1.5 since 2.5 is not public
+      // 1. Try Gemini Models (Using 2.5 Flash series as requested)
+      const geminiModels = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]; 
       for (const modelName of geminiModels) {
         if (success) break;
         try {
+          setActiveModelName(modelName);
           const result = await aiModel.models.generateContentStream({
             model: modelName,
             contents: prompt,
@@ -73,6 +75,7 @@ Requirements:
         for (const modelName of groqModels) {
           if (success) break;
           try {
+            setActiveModelName(`Groq: ${modelName}`);
             const chatCompletion = await groq.chat.completions.create({
               messages: [{ role: "user", content: prompt }],
               model: modelName,
@@ -108,6 +111,7 @@ Requirements:
         for (const modelName of orModels) {
           if (success) break;
           try {
+            setActiveModelName(`OpenRouter: ${modelName.split('/').pop()}`);
             const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
               method: "POST",
               headers: {
@@ -162,6 +166,11 @@ Requirements:
         <div className="flex items-center gap-2">
           <Bot className="w-4 h-4 text-primary" />
           <span className="ai-badge">AI Response</span>
+          {activeModelName && (
+            <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[10px] text-white/50 font-medium tracking-wide">
+              {activeModelName}
+            </span>
+          )}
         </div>
         {isAiGenerating && (
           <div className="flex items-center gap-3">
