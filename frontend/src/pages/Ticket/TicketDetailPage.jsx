@@ -86,35 +86,35 @@ const TicketDetailPage = () => {
     <div className="min-h-screen bg-background text-foreground scrollbar-hide">
       <TopBar />
       <MainLayout>
-        <div className="flex flex-col max-w-4xl mx-auto pb-20">
+        <div className="flex flex-col max-w-4xl mx-auto pb-10 sm:pb-20">
           {/* Back Button */}
-          <div className="p-4 flex items-center gap-4 border-b border-white/5 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
+          <div className="p-3 sm:p-4 flex items-center gap-3 sm:gap-4 border-b border-white/5 sticky top-0 bg-background/80 backdrop-blur-xl z-10">
             <Link to="/" className="hover:bg-white/10 p-2 rounded-full transition-colors">
-              <ArrowLeft className="w-6 h-6" />
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </Link>
-            <h1 className="text-xl font-bold">Issue Details</h1>
+            <h1 className="text-lg sm:text-xl font-bold">Issue Details</h1>
           </div>
 
           {/* Post Content */}
-          <div className="p-6 border-b border-white/5">
-            <div className="flex gap-4 mb-6">
+          <div className="p-4 sm:p-6 border-b border-white/5">
+            <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
               <Link to={`/profile/${currentPost.userId?.clerkId}`}>
-                <Avatar className="w-12 h-12 border border-primary/20">
+                <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border border-primary/20">
                   <AvatarImage src={currentPost.userId?.imageUrl} />
                   <AvatarFallback className="bg-primary/20 text-primary">{currentPost.userId?.fullname?.charAt(0)}</AvatarFallback>
                 </Avatar>
               </Link>
-              <div>
-                <Link to={`/profile/${currentPost.userId?.clerkId}`} className="font-bold hover:underline block">
+              <div className="min-w-0">
+                <Link to={`/profile/${currentPost.userId?.clerkId}`} className="font-bold hover:underline block truncate">
                   {currentPost.userId?.fullname}
                 </Link>
-                <span className="text-sm text-foreground/40 font-mono">@{currentPost.userId?.username}</span>
+                <span className="text-xs text-foreground/40 font-mono truncate block">@{currentPost.userId?.username}</span>
               </div>
               <div className="ml-auto flex items-center gap-2 relative">
                 {currentPost.assignedTo && (
                   <Link
                     to={`/profile/${currentPost.assignedTo.clerkId || currentPost.assignedTo._id}`}
-                    className="text-[10px] font-bold tracking-wider text-blue-400/80 hover:text-blue-400 uppercase transition-colors mr-1"
+                    className="text-[9px] sm:text-[10px] font-bold tracking-wider text-blue-400/80 hover:text-blue-400 uppercase transition-colors mr-1 truncate max-w-[80px] sm:max-w-none"
                   >
                     @{currentPost.assignedTo.username}
                   </Link>
@@ -122,16 +122,16 @@ const TicketDetailPage = () => {
 
                 <div
                   onClick={() => isDeveloper ? setIsStatusMenuOpen(!isStatusMenuOpen) : null}
-                  className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
+                  className={`flex items-center gap-1.5 sm:gap-2 bg-white/5 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
                 >
-                  <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
-                  <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
+                  <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
+                  <span className="text-[9px] sm:text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
                     {statusStyle.label}
                   </span>
                 </div>
 
                 {isDeveloper && isStatusMenuOpen && (
-                  <div className="absolute top-full right-0 mt-2 flex flex-col gap-1.5 bg-card border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]">
+                  <div className="absolute top-full right-0 mt-2 flex flex-col gap-1.5 bg-[#0a0a0f] border border-white/10 rounded-xl p-2 shadow-2xl z-50 min-w-[140px]">
                     {currentPost.status === 'open' && (
                       <button
                         onClick={async () => { 
@@ -185,31 +185,31 @@ const TicketDetailPage = () => {
               </div>
             </div>
 
-            <h2 className="text-2xl font-black mb-4 tracking-tight leading-tight">
+            <h2 className="text-xl sm:text-2xl font-black mb-3 sm:mb-4 tracking-tight leading-tight">
               {currentPost.title}
             </h2>
 
-            <div className="text-lg leading-relaxed text-foreground/80 mb-6 whitespace-pre-wrap">
+            <div className="text-[15px] sm:text-lg leading-relaxed text-foreground/80 mb-6 whitespace-pre-wrap">
               <LinkifiedText text={currentPost.description} />
             </div>
 
             {currentPost.code && (
               <div className="mt-6 w-full rounded-2xl overflow-hidden border border-border/50 bg-[#080812] shadow-inner relative">
-                <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
+                <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-white/5 border-b border-white/10">
                   <div className="flex items-center gap-2">
                     <Terminal className="w-4 h-4 text-secondary" />
                     <span className="text-[10px] font-mono text-secondary/80 uppercase">snippet.js</span>
                   </div>
                   <button
                     onClick={() => setIsCodeExpanded(!isCodeExpanded)}
-                    className="text-xs text-foreground/40 hover:text-white flex items-center gap-1 transition-colors"
+                    className="text-[10px] sm:text-xs text-foreground/40 hover:text-white flex items-center gap-1 transition-colors"
                   >
                     {isCodeExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     {isCodeExpanded ? 'Collapse' : 'Expand'}
                   </button>
                 </div>
-                <div className={`transition-all duration-300 ease-in-out ${isCodeExpanded ? 'max-h-none p-6' : 'max-h-32 p-6 grayscale-[0.3] opacity-60 overflow-hidden'}`}>
-                  <pre className="text-sm font-mono text-white leading-relaxed overflow-x-auto pb-2">
+                <div className={`transition-all duration-300 ease-in-out ${isCodeExpanded ? 'max-h-none p-4 sm:p-6' : 'max-h-32 p-4 sm:p-6 grayscale-[0.3] opacity-60 overflow-hidden'}`}>
+                  <pre className="text-xs sm:text-sm font-mono text-white leading-relaxed overflow-x-auto pb-2 scrollbar-hide">
                     <code>{currentPost.code}</code>
                   </pre>
                 </div>
@@ -218,7 +218,7 @@ const TicketDetailPage = () => {
 
             {currentPost.code && <div className="mb-6" />}
 
-            <div className="py-4 border-y border-border/50 text-sm text-foreground/40 mt-6 flex gap-1.5 font-medium">
+            <div className="py-4 border-y border-border/50 text-xs sm:text-sm text-foreground/40 mt-6 flex gap-1.5 font-medium">
               <span className="hover:underline cursor-default">
                 {new Date(currentPost.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
               </span>
@@ -228,41 +228,41 @@ const TicketDetailPage = () => {
               </span>
             </div>
 
-            <div className="flex items-center gap-6 text-foreground/40 mt-4">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-foreground/40 mt-4">
               <button 
                 onClick={() => toggleLike(currentPost._id)}
                 className={`flex items-center gap-2 transition-colors ${isLiked ? 'text-purple-500' : 'hover:text-purple-500'}`}
               >
                 <div className={`p-2 rounded-full ${isLiked ? 'bg-pink-500/10' : 'hover:bg-pink-500/10'}`}>
-                  <Repeat2 className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                  <Repeat2 className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? 'fill-current' : ''}`} />
                 </div>
-                <span className="text-sm font-bold">{currentPost.likes?.length || 0}</span>
+                <span className="text-xs sm:text-sm font-bold">{currentPost.likes?.length || 0}</span>
               </button>
               <div className="flex items-center gap-2 group/comment hover:text-secondary cursor-pointer transition-colors">
                 <div className="p-2 rounded-full group-hover/comment:bg-secondary/10">
-                  <MessageSquare className="w-5 h-5" />
+                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="text-sm font-bold">{comments.length}</span>
+                <span className="text-xs sm:text-sm font-bold">{comments.length}</span>
               </div>
               <button 
                 onClick={handleShare}
                 className="p-2 rounded-full hover:bg-primary/10 hover:text-primary transition-colors"
               >
-                <Share2 className="w-5 h-5" />
+                <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
               {/* AI Badge Button */}
               <div
                 onClick={() => setShowAiResponse(!showAiResponse)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ml-2 ${
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ml-auto sm:ml-2 ${
                   showAiResponse 
                     ? 'bg-primary/50 border-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.5)] scale-105' 
                     : 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20 glow-primary'
                 }`}
               >
-                <Sparkles className={`w-3.5 h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
-                <span className="text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
-                  {showAiResponse ? 'Hide Solution' : (currentPost.aiResponse ? 'View AI Solution' : 'Ask AI')}
+                <Sparkles className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
+                  {showAiResponse ? 'Hide' : (currentPost.aiResponse ? 'View AI' : 'Ask AI')}
                 </span>
               </div>
             </div>
@@ -280,34 +280,34 @@ const TicketDetailPage = () => {
           </div>
 
           {/* Comment Input */}
-          <div className="p-6 border-b border-white/5">
+          <div className="p-4 sm:p-6 border-b border-white/5">
             {isSignedIn ? (
-              <form onSubmit={handleCommentSubmit} className="flex gap-4">
-                <Avatar className="w-10 h-10">
+              <form onSubmit={handleCommentSubmit} className="flex gap-3 sm:gap-4">
+                <Avatar className="w-8 h-8 sm:w-10 sm:h-10 shrink-0">
                   <AvatarImage src={user?.imageUrl} />
                   <AvatarFallback>{user?.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1 flex flex-col gap-2">
+                <div className="flex-1 flex flex-col gap-2 min-w-0">
                   <textarea
-                    placeholder="Post your analytical comment..."
+                    placeholder="Post your reply..."
                     value={commentText}
                     onChange={(e) => setCommentText(e.target.value)}
-                    className="w-full bg-transparent border-none focus:ring-0 text-lg placeholder:text-foreground/20 resize-none min-h-[40px] py-2"
+                    className="w-full bg-transparent border-none focus:ring-0 text-md sm:text-lg placeholder:text-foreground/20 resize-none min-h-[40px] py-2"
                   />
                   <div className="flex justify-end">
                     <Button 
                       type="submit" 
                       disabled={!commentText.trim() || isCommenting}
-                      className="rounded-full bg-primary text-black font-bold px-6"
+                      className="rounded-full bg-primary text-black font-bold px-4 sm:px-6 h-8 sm:h-10 text-sm"
                     >
-                      {isCommenting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Reply"}
+                      {isCommenting ? <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" /> : "Reply"}
                     </Button>
                   </div>
                 </div>
               </form>
             ) : (
-              <div className="p-6 text-center glass rounded-2xl border border-white/10 bg-white/5">
-                <p className="text-foreground/40 font-medium italic">Please sign in to join the technical discussion.</p>
+              <div className="p-4 sm:p-6 text-center glass rounded-2xl border border-white/10 bg-white/5">
+                <p className="text-xs sm:text-sm text-foreground/40 font-medium italic">Please sign in to join the technical discussion.</p>
               </div>
             )}
           </div>
@@ -315,48 +315,48 @@ const TicketDetailPage = () => {
           {/* Comments List */}
           <div className="flex flex-col divide-y divide-white/5">
             {comments.map((comment) => (
-              <div key={comment._id} className="p-6 flex gap-4 hover:bg-white/[0.01] transition-colors">
+              <div key={comment._id} className="p-4 sm:p-6 flex gap-3 sm:gap-4 hover:bg-white/[0.01] transition-colors">
                 <Link to={`/profile/${comment.userId?.clerkId}`}>
-                  <Avatar className="w-10 h-10 border border-white/10">
+                  <Avatar className="w-8 h-8 sm:w-10 sm:h-10 border border-white/10 shrink-0">
                     <AvatarImage src={comment.userId?.imageUrl} />
                     <AvatarFallback>{comment.userId?.fullname?.charAt(0)}</AvatarFallback>
                   </Avatar>
                 </Link>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Link to={`/profile/${comment.userId?.clerkId}`} className="font-bold hover:underline">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <Link to={`/profile/${comment.userId?.clerkId}`} className="font-bold hover:underline text-sm sm:text-base truncate">
                       {comment.userId?.fullname}
                     </Link>
-                    <span className="text-xs text-foreground/40 font-mono">@{comment.userId?.username}</span>
-                    <div className="flex items-center gap-1">
+                    <span className="text-[10px] sm:text-xs text-foreground/40 font-mono truncate">@{comment.userId?.username}</span>
+                    <div className="flex items-center gap-1 shrink-0">
                       {(comment.userId?.role === 'developer' || comment.userId?.role === 'admin') && (
-                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold ${comment.userId?.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50' : 'bg-primary/20 text-primary border-primary/50'} border uppercase tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.3)]`}>
+                        <span className={`inline-flex items-center px-1 py-0.5 rounded text-[7px] sm:text-[8px] font-bold ${comment.userId?.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50' : 'bg-primary/20 text-primary border-primary/50'} border uppercase tracking-wider`}>
                           {comment.userId?.role === 'admin' ? 'Admin' : 'Dev'}
                         </span>
                       )}
                       {comment.userId?.clerkId === currentPost?.userId?.clerkId && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
+                        <span className="inline-flex items-center px-1 py-0.5 rounded text-[7px] sm:text-[8px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
                           Author
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] text-foreground/20">• {formatRelativeTime(comment.createdAt)}</span>
+                    <span className="text-[9px] sm:text-[10px] text-foreground/20">• {formatRelativeTime(comment.createdAt)}</span>
                     {comment.authorLiked && (
-                      <span className="flex items-center gap-1 text-[10px] text-primary font-bold ml-2">
-                        <CheckCircle2 className="w-3 h-3" /> Seen by Author
+                      <span className="flex items-center gap-1 text-[9px] sm:text-[10px] text-primary font-bold ml-1">
+                        <CheckCircle2 className="w-3 h-3" /> Seen
                       </span>
                     )}
                   </div>
-                  <div className="text-foreground/80 leading-relaxed mb-2">
+                  <div className="text-sm sm:text-base text-foreground/80 leading-relaxed mb-2">
                     <LinkifiedText text={comment.content} />
                   </div>
                   
                   {isOwner && (
                     <button 
                       onClick={() => toggleCommentAuthorLike(comment._id)}
-                      className={`flex items-center gap-1.5 text-xs transition-colors p-1.5 rounded-lg ${comment.authorLiked ? 'text-primary bg-primary/10' : 'text-foreground/30 hover:bg-white/5 hover:text-primary'}`}
+                      className={`flex items-center gap-1.5 text-[10px] sm:text-xs transition-colors p-1 sm:p-1.5 rounded-lg ${comment.authorLiked ? 'text-primary bg-primary/10' : 'text-foreground/30 hover:bg-white/5 hover:text-primary'}`}
                     >
-                      <Heart className={`w-3.5 h-3.5 ${comment.authorLiked ? 'fill-current' : ''}`} />
+                      <Heart className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${comment.authorLiked ? 'fill-current' : ''}`} />
                       <span>{comment.authorLiked ? 'Seen' : 'Mark as Seen'}</span>
                     </button>
                   )}
@@ -365,9 +365,9 @@ const TicketDetailPage = () => {
             ))}
             
             {comments.length === 0 && (
-              <div className="p-20 text-center text-foreground/20">
-                <MessageSquare className="w-12 h-12 mx-auto mb-4 opacity-20" />
-                <p className="font-medium italic">No technical comments yet. Be the first to analyze!</p>
+              <div className="py-12 sm:py-20 text-center text-foreground/20">
+                <MessageSquare className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-4 opacity-20" />
+                <p className="font-medium italic text-sm sm:text-base">No technical comments yet. Be the first to analyze!</p>
               </div>
             )}
           </div>

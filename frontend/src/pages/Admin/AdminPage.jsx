@@ -83,33 +83,33 @@ const AdminPage = () => {
     }, [tickets, ticketFilter, searchQuery]);
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans">
+        <div className="min-h-screen bg-black text-white selection:bg-primary/30 font-sans pb-10 sm:pb-0">
             <TopBar />
-            <div className="max-w-7xl mx-auto flex">
-                <aside className="hidden md:flex flex-col w-64 h-[calc(100vh-64px)] sticky top-16 border-r border-white/5">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row">
+                <aside className="hidden md:flex flex-col w-64 h-[calc(100vh-64px)] sticky top-16 border-r border-white/5 shrink-0">
                     <Sidebar />
                 </aside>
 
-                <main className="flex-1 p-6 space-y-10">
-                    <header className="flex flex-col gap-2">
-                        <h1 className="text-4xl font-extrabold tracking-tight">
+                <main className="flex-1 p-4 sm:p-6 lg:p-10 space-y-8 sm:space-y-10 min-w-0 pb-20 sm:pb-10">
+                    <header className="flex flex-col gap-1 sm:gap-2">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
                             Admin Dashboard
                         </h1>
-                        <p className="text-white/50 text-sm">Manage platform users and ticket life cycles.</p>
+                        <p className="text-white/50 text-xs sm:text-sm">Manage platform users and ticket life cycles.</p>
                     </header>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         {statCards.map((stat) => (
-                            <Card key={stat.id} className="bg-white/5 border-white/5 backdrop-blur-md rounded-3xl overflow-hidden group border transition-all duration-300">
-                                <CardContent className="pt-6 pb-6 px-6">
-                                    <div className="flex items-center justify-between">
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] uppercase tracking-widest text-white/40 font-bold">{stat.label}</p>
-                                            <h3 className="text-3xl font-black">{stat.value}</h3>
+                            <Card key={stat.id} className="bg-white/5 border-white/5 backdrop-blur-md rounded-2xl sm:rounded-3xl overflow-hidden group border transition-all duration-300">
+                                <CardContent className="p-4 sm:p-6">
+                                    <div className="flex items-center justify-between gap-2">
+                                        <div className="space-y-0.5 sm:space-y-1 min-w-0">
+                                            <p className="text-[8px] sm:text-[10px] uppercase tracking-widest text-white/40 font-bold truncate">{stat.label}</p>
+                                            <h3 className="text-xl sm:text-2xl lg:text-3xl font-black truncate">{stat.value}</h3>
                                         </div>
-                                        <div className={`p-3 rounded-2xl bg-white/5 ${stat.color}`}>
-                                            <stat.icon className="w-6 h-6 antialiased" />
+                                        <div className={`p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-white/5 ${stat.color} shrink-0`}>
+                                            <stat.icon className="w-4 h-4 sm:w-6 sm:h-6 antialiased" />
                                         </div>
                                     </div>
                                 </CardContent>
@@ -118,29 +118,29 @@ const AdminPage = () => {
                     </div>
 
                     {/* View Controls */}
-                    <div className="flex flex-col gap-8">
-                        <div className="flex flex-col gap-6">
-                           <div className="flex overflow-x-auto scrollbar-hide gap-3 py-2 border-b border-white/5 -mt-2 pb-5">
-                                <div className="flex items-center gap-2 pr-6 border-r border-white/10">
+                    <div className="flex flex-col gap-6 sm:gap-8">
+                        <div className="flex flex-col gap-5 sm:gap-6">
+                           <div className="flex overflow-x-auto scrollbar-hide gap-3 py-1 sm:py-2 border-b border-white/5 -mt-2 pb-4 sm:pb-5">
+                                <div className="flex items-center gap-2 pr-4 sm:pr-6 border-r border-white/10 shrink-0">
                                     <button 
                                         onClick={() => { setViewMode('users'); setSearchQuery(''); }}
-                                        className={`px-8 py-2 rounded-full text-sm font-medium transition-all ${viewMode === 'users' ? 'bg-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
+                                        className={`px-6 sm:px-8 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${viewMode === 'users' ? 'bg-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
                                     >
                                         Users
                                     </button>
                                     <button 
                                         onClick={() => { setViewMode('tickets'); setSearchQuery(''); }}
-                                        className={`px-8 py-2 rounded-full text-sm font-medium transition-all ${viewMode === 'tickets' ? 'bg-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
+                                        className={`px-6 sm:px-8 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${viewMode === 'tickets' ? 'bg-primary text-black' : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
                                     >
                                         Tickets
                                     </button>
                                 </div>
-                                <div className="flex items-center gap-2 pl-3">
+                                <div className="flex items-center gap-2 pl-3 shrink-0">
                                     {(viewMode === 'users' ? ['all', 'developers', 'users', 'admins', 'deleted'] : ['all', 'open', 'in_progress', 'resolved', 'critical']).map(f => (
                                         <button 
                                             key={f}
                                             onClick={() => viewMode === 'users' ? setUserFilter(f) : setTicketFilter(f)}
-                                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all capitalize ${
+                                            className={`px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-sm font-medium transition-all capitalize whitespace-nowrap ${
                                                 (viewMode === 'users' ? userFilter === f : ticketFilter === f) 
                                                 ? 'bg-primary text-black' 
                                                 : 'bg-white/5 text-white/70 hover:bg-white/10'}`}
@@ -151,11 +151,11 @@ const AdminPage = () => {
                                 </div>
                             </div>
 
-                            <div className="relative max-w-lg w-full">
+                            <div className="relative w-full max-w-lg">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
                                 <Input 
                                     placeholder={viewMode === 'users' ? "Search users..." : "Search tickets..."}
-                                    className="bg-white/5 border-white/10 pl-11 h-12 rounded-2xl font-medium placeholder:text-white/20 border text-white"
+                                    className="bg-white/5 border-white/10 pl-11 h-10 sm:h-12 rounded-xl sm:rounded-2xl font-medium placeholder:text-white/20 border text-white text-sm"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                 />
@@ -164,36 +164,36 @@ const AdminPage = () => {
 
                         {/* Data Matrix */}
                         <div className="flex flex-col gap-2">
-                             <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 mb-2">
+                             <h2 className="text-[10px] sm:text-sm font-bold uppercase tracking-widest text-white/40 mb-1 sm:mb-2 px-1">
                                 Platform {viewMode === 'users' ? 'User Directory' : 'Ticket History'}
                             </h2>
 
-                            <Card className="bg-white/5 border-white/5 rounded-[2.5rem] overflow-hidden border">
+                            <Card className="bg-white/5 border-white/5 rounded-2xl sm:rounded-[2.5rem] overflow-hidden border">
                                 <CardContent className="p-0">
                                     {isLoading ? (
-                                        <div className="py-24 flex flex-col items-center justify-center gap-4 text-white/10">
-                                            <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                                            <p className="font-bold tracking-widest text-[10px] uppercase animate-pulse">Syncing platform data...</p>
+                                        <div className="py-20 sm:py-24 flex flex-col items-center justify-center gap-4 text-white/10">
+                                            <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-primary" />
+                                            <p className="font-bold tracking-widest text-[8px] sm:text-[10px] uppercase animate-pulse">Syncing platform data...</p>
                                         </div>
                                     ) : (
-                                        <div className="overflow-x-auto min-h-[500px]">
+                                        <div className="overflow-x-auto min-h-[400px] sm:min-h-[500px] scrollbar-hide">
                                             <Table>
                                                 <TableHeader className="bg-white/[0.02]">
                                                     <TableRow className="border-white/5 hover:bg-transparent">
                                                         {viewMode === 'users' ? (
                                                             <>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest pl-10 py-6">User</TableHead>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest">Role</TableHead>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest">Joined</TableHead>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest text-right pr-10">Control</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest pl-5 sm:pl-10 py-4 sm:py-6">User</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest">Role</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest hidden sm:table-cell">Joined</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest text-right pr-5 sm:pr-10">Control</TableHead>
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest pl-10 py-6">Ticket</TableHead>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest">Owner</TableHead>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest">Developer</TableHead>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest">Status</TableHead>
-                                                                <TableHead className="text-white/30 uppercase text-[9px] font-black tracking-widest text-right pr-10">Action</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest pl-5 sm:pl-10 py-4 sm:py-6">Ticket</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest hidden xs:table-cell">Owner</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest hidden sm:table-cell">Developer</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest">Status</TableHead>
+                                                                <TableHead className="text-white/30 uppercase text-[8px] sm:text-[9px] font-black tracking-widest text-right pr-5 sm:pr-10">Action</TableHead>
                                                             </>
                                                         )}
                                                     </TableRow>
@@ -201,7 +201,7 @@ const AdminPage = () => {
                                                 <TableBody>
                                                     {(viewMode === 'users' ? filteredUsers : filteredTickets).length === 0 ? (
                                                         <TableRow>
-                                                            <TableCell colSpan={viewMode === 'users' ? 4 : 5} className="h-60 text-center text-white/10 font-bold uppercase tracking-widest text-sm">
+                                                            <TableCell colSpan={viewMode === 'users' ? 4 : 5} className="h-40 sm:h-60 text-center text-white/10 font-bold uppercase tracking-widest text-xs sm:text-sm">
                                                                 No Records Found
                                                             </TableCell>
                                                         </TableRow>
@@ -209,20 +209,20 @@ const AdminPage = () => {
                                                         <TableRow key={item._id} className="border-white/[0.03] hover:bg-white/[0.02] transition-all duration-300">
                                                             {viewMode === 'users' ? (
                                                                 <>
-                                                                    <TableCell className="pl-10">
-                                                                        <div className="flex items-center gap-5 py-4">
-                                                                            <Link to={`/profile/${item.clerkId || item._id}`} className="relative block">
-                                                                                <img src={item.imageUrl} className="w-11 h-11 rounded-2xl border border-white/10 shadow-lg object-cover" alt="" />
-                                                                                {item.isDeleted && <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-600 rounded-full border-2 border-black" />}
+                                                                    <TableCell className="pl-5 sm:pl-10">
+                                                                        <div className="flex items-center gap-3 sm:gap-5 py-3 sm:py-4">
+                                                                            <Link to={`/profile/${item.clerkId || item._id}`} className="relative block shrink-0">
+                                                                                <img src={item.imageUrl} className="w-8 h-8 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl border border-white/10 shadow-lg object-cover" alt="" />
+                                                                                {item.isDeleted && <div className="absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 bg-red-600 rounded-full border-2 border-black" />}
                                                                             </Link>
-                                                                            <div className="flex flex-col">
-                                                                                <Link to={`/profile/${item.clerkId || item._id}`} className="text-sm font-bold tracking-tight hover:text-primary transition-colors">{item.fullname}</Link>
-                                                                                <span className="text-[10px] text-white/30 font-medium">{item.email}</span>
+                                                                            <div className="flex flex-col min-w-0">
+                                                                                <Link to={`/profile/${item.clerkId || item._id}`} className="text-xs sm:text-sm font-bold tracking-tight hover:text-primary transition-colors truncate">{item.fullname}</Link>
+                                                                                <span className="text-[8px] sm:text-[10px] text-white/30 font-medium truncate">{item.email}</span>
                                                                             </div>
                                                                         </div>
                                                                     </TableCell>
                                                                     <TableCell>
-                                                                        <span className={`px-2.5 py-0.5 rounded-lg text-[9px] font-black uppercase border tracking-widest ${
+                                                                        <span className={`px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-black uppercase border tracking-widest ${
                                                                             item.role === 'admin' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
                                                                             item.role === 'developer' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                                                                             'bg-white/5 text-white/30 border-white/10'
@@ -230,40 +230,34 @@ const AdminPage = () => {
                                                                             {item.role}
                                                                         </span>
                                                                     </TableCell>
-                                                                    <TableCell className="text-white/20 text-[10px] font-medium font-mono">
+                                                                    <TableCell className="text-white/20 text-[9px] sm:text-[10px] font-medium font-mono hidden sm:table-cell">
                                                                         {formatTime(item.createdAt)}
                                                                     </TableCell>
-                                                                    <TableCell className="text-right pr-10">
-                                                                        <div className="flex justify-end gap-1.5 transition-all">
+                                                                    <TableCell className="text-right pr-5 sm:pr-10">
+                                                                        <div className="flex justify-end gap-1 sm:gap-1.5 transition-all">
                                                                             {item.isDeleted ? (
-                                                                                 <Button 
-                                                                                    size="icon" 
-                                                                                    variant="ghost" 
-                                                                                    className="h-10 w-10 rounded-xl hover:bg-green-500/10 hover:text-green-500 transition-all active:scale-90"
+                                                                                 <button 
+                                                                                    className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-green-500/10 text-white/40 hover:text-green-500 transition-all active:scale-90"
                                                                                     onClick={() => restoreUser(item._id)}
                                                                                 >
-                                                                                    <RotateCcw className="w-5 h-5 font-bold" />
-                                                                                </Button>
+                                                                                    <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 font-bold" />
+                                                                                </button>
                                                                             ) : (
                                                                                 <>
-                                                                                    <Button 
-                                                                                        size="icon" 
-                                                                                        variant="ghost" 
-                                                                                        className="h-10 w-10 rounded-xl hover:bg-primary/10 hover:text-primary transition-all active:scale-90"
+                                                                                    <button 
+                                                                                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-primary/10 text-white/40 hover:text-primary transition-all active:scale-90"
                                                                                         onClick={() => updateUserRole(item._id, item.role === 'developer' ? 'user' : 'developer')}
                                                                                     >
-                                                                                        <UserCog className="w-5 h-5" />
-                                                                                    </Button>
-                                                                                    <Button 
-                                                                                        size="icon" 
-                                                                                        variant="ghost" 
-                                                                                        className="h-10 w-10 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-90"
+                                                                                        <UserCog className="w-4 h-4 sm:w-5 sm:h-5" />
+                                                                                    </button>
+                                                                                    <button 
+                                                                                        className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-red-500/10 text-white/40 hover:text-red-500 transition-all active:scale-90"
                                                                                         onClick={() => {
                                                                                             if(confirm('Are you sure you want to delete this user?')) deleteUser(item._id);
                                                                                         }}
                                                                                     >
-                                                                                        <Trash2 className="w-5 h-5" />
-                                                                                    </Button>
+                                                                                        <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                                                                                    </button>
                                                                                 </>
                                                                             )}
                                                                         </div>
@@ -271,19 +265,19 @@ const AdminPage = () => {
                                                                 </>
                                                             ) : (
                                                                 <>
-                                                                    <TableCell className="pl-10">
-                                                                        <div className="flex flex-col gap-1 py-4">
-                                                                            <span className="text-sm font-bold tracking-tight line-clamp-1">{item.title}</span>
-                                                                            <span className="text-[9px] text-white/10 font-mono tracking-widest">{item._id.slice(0, 12)}...</span>
+                                                                    <TableCell className="pl-5 sm:pl-10">
+                                                                        <div className="flex flex-col gap-0.5 sm:gap-1 py-3 sm:py-4 min-w-0">
+                                                                            <span className="text-xs sm:text-sm font-bold tracking-tight line-clamp-1">{item.title}</span>
+                                                                            <span className="text-[8px] sm:text-[9px] text-white/10 font-mono tracking-widest">{item._id.slice(0, 8)}...</span>
                                                                         </div>
                                                                     </TableCell>
-                                                                    <TableCell>
-                                                                        <Link to={`/profile/${item.userId?.clerkId || item.userId?._id}`} className="flex items-center gap-3">
-                                                                            <img src={item.userId?.imageUrl} className="w-8 h-8 rounded-xl border border-white/10 shadow-lg object-cover" alt="" />
-                                                                            <span className="text-[11px] text-white/60 font-bold hover:text-primary transition-colors">{item.userId?.fullname}</span>
+                                                                    <TableCell className="hidden xs:table-cell">
+                                                                        <Link to={`/profile/${item.userId?.clerkId || item.userId?._id}`} className="flex items-center gap-2 sm:gap-3 shrink-0">
+                                                                            <img src={item.userId?.imageUrl} className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg border border-white/10 shadow-lg object-cover" alt="" />
+                                                                            <span className="text-[10px] sm:text-[11px] text-white/60 font-bold hover:text-primary transition-colors truncate max-w-[80px] sm:max-w-none">{item.userId?.fullname?.split(' ')[0]}</span>
                                                                         </Link>
                                                                     </TableCell>
-                                                                    <TableCell>
+                                                                    <TableCell className="hidden sm:table-cell">
                                                                         {item.assignedTo ? (
                                                                             <Link to={`/profile/${item.assignedTo?.clerkId || item.assignedTo?._id}`} className="flex items-center gap-3">
                                                                                 <img src={item.assignedTo?.imageUrl} className="w-8 h-8 rounded-xl border border-white/10 shadow-lg object-cover" alt="" />
@@ -294,7 +288,7 @@ const AdminPage = () => {
                                                                         )}
                                                                     </TableCell>
                                                                     <TableCell>
-                                                                        <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border ${
+                                                                        <span className={`px-2 py-0.5 rounded text-[8px] sm:text-[9px] font-black uppercase tracking-wider border ${
                                                                             item.status === 'resolved' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
                                                                             item.status === 'open' ? 'bg-primary/10 text-primary border-primary/20' :
                                                                             item.status === 'critical' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
@@ -303,23 +297,19 @@ const AdminPage = () => {
                                                                             {item.status.replace('_', ' ')}
                                                                         </span>
                                                                     </TableCell>
-                                                                    <TableCell className="text-right pr-10">
-                                                                        <div className="flex justify-end gap-1.5 font-bold">
-                                                                            <Button asChild size="icon" variant="ghost" className="h-10 w-10 outline-none rounded-xl hover:bg-primary/10 hover:text-primary transition-all">
-                                                                                <Link to={`/ticket/${item._id}`}>
-                                                                                    <ExternalLink className="w-5 h-5" />
-                                                                                </Link>
-                                                                            </Button>
-                                                                            <Button 
-                                                                                size="icon" 
-                                                                                variant="ghost" 
-                                                                                className="h-10 w-10 rounded-xl hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-90"
+                                                                    <TableCell className="text-right pr-5 sm:pr-10">
+                                                                        <div className="flex justify-end gap-1 sm:gap-1.5 font-bold">
+                                                                            <Link to={`/ticket/${item._id}`} className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-primary/10 text-white/40 hover:text-primary transition-all">
+                                                                                <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5" />
+                                                                            </Link>
+                                                                            <button 
+                                                                                className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl hover:bg-red-500/10 text-white/40 hover:text-red-500 transition-all active:scale-90"
                                                                                 onClick={() => {
                                                                                     if(confirm('Are you sure you want to delete this ticket?')) deleteTicket(item._id);
                                                                                 }}
                                                                             >
-                                                                                <Trash2 className="w-5 h-5" />
-                                                                            </Button>
+                                                                                <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                                                                            </button>
                                                                         </div>
                                                                     </TableCell>
                                                                 </>

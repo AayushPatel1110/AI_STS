@@ -45,51 +45,51 @@ const ExplorePage = () => {
     <div className="min-h-screen bg-background text-foreground scrollbar-hide">
       <TopBar />
       <MainLayout>
-        <div className="p-6 flex flex-col gap-8">
+        <div className="p-4 sm:p-6 flex flex-col gap-6 sm:gap-8">
           {/* Header Section */}
           <div className="flex flex-col gap-2 relative">
             <div className="absolute -top-10 -left-10 w-40 h-40 bg-primary/10 blur-[80px] rounded-full pointer-events-none" />
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-foreground via-foreground to-foreground/40 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-foreground via-foreground to-foreground/40 bg-clip-text text-transparent">
               Explore
             </h1>
-            <p className="text-foreground/50 flex items-center gap-2">
+            <p className="text-foreground/50 flex items-center gap-2 text-sm sm:text-base">
               <Sparkles className="w-4 h-4 text-primary" />
               Discover technical issues and brilliant developers.
             </p>
           </div>
 
           {/* Search & Toggle Bar */}
-          <div className="flex flex-col gap-4 sticky top-0 z-30 bg-background/80 backdrop-blur-xl py-4 -my-4 border-b border-border/50">
+          <div className="flex flex-col gap-4 sticky top-0 z-30 bg-background/80 backdrop-blur-xl py-3 sm:py-4 -my-4 border-b border-border/50">
             <div className="relative group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground/30 group-focus-within:text-primary transition-colors" />
-              <Input
-                className="pl-12 pr-12 bg-card/40 border-border/50 h-14 text-lg rounded-2xl focus:ring-primary/20 focus:border-primary/50 transition-all shadow-2xl"
-                placeholder={`Search for ${searchMode === 'tickets' ? 'problems, titles...' : 'names, usernames...'}`}
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-foreground/30 group-focus-within:text-primary transition-colors" />
+              <input
+                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 bg-card/40 border border-border/50 h-12 sm:h-14 text-md sm:text-lg rounded-xl sm:rounded-2xl focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary/50 transition-all shadow-xl"
+                placeholder={`Search for ${searchMode === 'tickets' ? 'problems...' : 'developers...'}`}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-white/10 text-foreground/40 hover:text-primary transition-all active:scale-90"
+                  className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 rounded-full hover:bg-white/10 text-foreground/40 hover:text-primary transition-all active:scale-90"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               )}
             </div>
 
             <Tabs defaultValue="tickets" className="w-full" onValueChange={setSearchMode}>
-              <TabsList className="bg-card/40 p-1 border border-border/50 glass rounded-xl w-fit h-auto flex gap-1">
+              <TabsList className="bg-card/40 p-1 border border-border/50 glass rounded-xl w-full sm:w-fit h-auto flex gap-1">
                 <TabsTrigger
                   value="tickets"
-                  className="gap-2 px-6 py-2.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black transition-all font-medium"
+                  className="flex-1 sm:flex-none gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black transition-all font-medium text-xs sm:text-sm"
                 >
                   <Ticket className="w-4 h-4" />
                   Issues
                 </TabsTrigger>
                 <TabsTrigger
                   value="users"
-                  className="gap-2 px-6 py-2.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black transition-all font-medium"
+                  className="flex-1 sm:flex-none gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg data-[state=active]:bg-primary data-[state=active]:text-black transition-all font-medium text-xs sm:text-sm"
                 >
                   <Users className="w-4 h-4" />
                   Developers
@@ -101,8 +101,8 @@ const ExplorePage = () => {
           {/* Results Area */}
           <div className="flex flex-col gap-6">
             {!searchQuery && searchMode === 'tickets' && (
-              <div className="flex flex-col gap-4 mb-2">
-                <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground/30 px-1">
+              <div className="flex flex-col gap-3 sm:gap-4 mb-2">
+                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/30 px-1">
                   Popular Keywords
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -110,9 +110,9 @@ const ExplorePage = () => {
                     <button
                       key={cat}
                       onClick={() => setSearchQuery(cat)}
-                      className="px-4 py-2 glass rounded-full border border-border/50 hover:bg-primary hover:text-black hover:border-primary transition-all text-sm font-bold flex items-center gap-2 group shadow-sm active:scale-95"
+                      className="px-3 py-1.5 sm:px-4 sm:py-2 glass rounded-full border border-border/50 hover:bg-primary hover:text-black hover:border-primary transition-all text-xs sm:text-sm font-bold flex items-center gap-2 group shadow-sm active:scale-95"
                     >
-                      <Hash className="w-3.5 h-3.5 text-primary group-hover:text-black transition-colors" />
+                      <Hash className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary group-hover:text-black transition-colors" />
                       {cat}
                     </button>
                   ))}

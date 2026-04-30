@@ -97,7 +97,7 @@ const PostCard = ({ post }) => {
       className="border-b border-border/50 rounded-none bg-transparent hover:bg-white/[0.02] transition-colors group cursor-pointer overflow-visible"
       onClick={handleCardClick}
     >
-      <CardContent className="p-4 flex gap-4">
+      <CardContent className="p-3 sm:p-4 flex gap-3 sm:gap-4">
         {/* Avatar Area */}
         <div className="flex flex-col items-center">
           <Link
@@ -115,39 +115,38 @@ const PostCard = ({ post }) => {
         {/* Content Area */}
         <div className="flex-1 min-w-0 flex flex-col gap-2 relative">
           {/* Header */}
-          <div className="flex justify-between items-start">
-            <div className="flex flex-col">
+          <div className="flex justify-between items-start gap-2">
+            <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5 flex-wrap">
                 <Link
                   to={`/profile/${post.userId?.clerkId || post.userId?._id}`}
-                  className="font-bold text-md text-foreground hover:underline cursor-pointer flex items-center gap-2 z-10"
+                  className="font-bold text-sm sm:text-md text-foreground hover:underline cursor-pointer flex items-center gap-2 z-10 truncate"
                   onClick={(e) => e.stopPropagation()}
                 >
                   {post.userId?.fullname}
-
                 </Link>
-                <label htmlFor="username" className="text-sm font-medium text-gray-500">@{post.userId?.username}</label>
+                <span className="text-xs sm:text-sm font-medium text-gray-500 truncate hidden xs:block">@{post.userId?.username}</span>
                 {(post.userId?.role === 'developer' || post.userId?.role === 'admin') && (
-                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${post.userId?.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-primary/20 text-primary border-primary/50 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]'} border relative overflow-hidden uppercase tracking-wider`}>
+                  <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${post.userId?.role === 'admin' ? 'bg-red-500/20 text-red-500 border-red-500/50 drop-shadow-[0_0_8px_rgba(239,68,68,0.8)]' : 'bg-primary/20 text-primary border-primary/50 drop-shadow-[0_0_8px_rgba(168,85,247,0.8)]'} border relative overflow-hidden uppercase tracking-wider shrink-0`}>
                     {post.userId?.role === 'admin' ? 'Admin' : 'Dev'}
                   </span>
                 )}
-                <span className="text-foreground/40 text-lg whitespace-nowrap">· {formatRelativeTime(post.createdAt)}</span>
+                <span className="text-foreground/40 text-xs sm:text-sm whitespace-nowrap">· {formatRelativeTime(post.createdAt)}</span>
               </div>
               <div className="group/title">
-                <h3 className="text-lg font-bold text-primary leading-tight mt-1 group-hover/title:underline cursor-pointer">{post.title}</h3>
+                <h3 className="text-base sm:text-lg font-bold text-primary leading-tight mt-1 group-hover/title:underline cursor-pointer line-clamp-2 sm:line-clamp-none">{post.title}</h3>
               </div>
             </div>
 
             {isOwner ? (
-              <div className="flex items-center gap-1 z-10">
+              <div className="flex items-center gap-1 z-10 shrink-0">
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary" onClick={(e) => e.stopPropagation()}>
+                    <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary h-8 w-8" onClick={(e) => e.stopPropagation()}>
                       <Edit3 className="w-4 h-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[500px]" onClick={(e) => e.stopPropagation()}>
+                  <DialogContent className="w-[95vw] max-w-[500px] p-4 sm:p-6 rounded-2xl" onClick={(e) => e.stopPropagation()}>
                     <DialogHeader>
                       <DialogTitle>Edit Post</DialogTitle>
                     </DialogHeader>
@@ -188,19 +187,19 @@ const PostCard = ({ post }) => {
                     </div>
                   </DialogContent>
                 </Dialog>
-                <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-red-500" onClick={(e) => { e.stopPropagation(); handleDelete(); }}>
+                <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-red-500 h-8 w-8" onClick={(e) => { e.stopPropagation(); handleDelete(); }}>
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
             ) : (
-              <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary z-10" onClick={handleShare}>
+              <Button variant="ghost" size="icon" className="text-foreground/40 hover:text-primary z-10 h-8 w-8 shrink-0" onClick={handleShare}>
                 <Share className="w-4 h-4" />
               </Button>
             )}
           </div>
           {/* Problem Text */}
           <div className="block">
-            <p className="text-foreground/90 text-md leading-relaxed whitespace-pre-wrap">
+            <p className="text-foreground/90 text-sm sm:text-md leading-relaxed whitespace-pre-wrap">
               <LinkifiedText text={post.description} />
             </p>
           </div>
@@ -208,21 +207,21 @@ const PostCard = ({ post }) => {
           {/* Code Snippet (StackOverflow Feature) */}
           {post.code && (
             <div className="mt-2 w-full rounded-xl overflow-hidden border border-border/50 bg-[#080812] shadow-inner relative z-10">
-              <div className="flex items-center justify-between px-4 py-2 bg-white/5 border-b border-white/10">
+              <div className="flex items-center justify-between px-3 sm:px-4 py-2 bg-white/5 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <Terminal className="w-4 h-4 text-primary/60" />
-                  <span className="text-xs font-mono text-primary/60">snippet.js</span>
+                  <span className="text-[10px] sm:text-xs font-mono text-primary/60">snippet.js</span>
                 </div>
                 <button
                   onClick={(e) => { e.stopPropagation(); setIsExpanded(!isExpanded); }}
-                  className="text-xs text-foreground/40 hover:text-white flex items-center gap-1"
+                  className="text-[10px] sm:text-xs text-foreground/40 hover:text-white flex items-center gap-1"
                 >
                   {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                   {isExpanded ? 'Collapse' : 'Expand'}
                 </button>
               </div>
-              <div className={`transition-all duration-300 ease-in-out ${isExpanded ? 'max-height-none p-4' : 'max-h-24 p-4 grayscale-[0.5] opacity-60 overflow-hidden'}`}>
-                <pre className="text-sm font-mono text-white leading-tight overflow-x-auto pb-2">
+              <div className={`transition-all duration-300 ease-in-out ${isExpanded ? 'max-height-none p-3 sm:p-4' : 'max-h-24 p-3 sm:p-4 grayscale-[0.5] opacity-60 overflow-hidden'}`}>
+                <pre className="text-xs sm:text-sm font-mono text-white leading-tight overflow-x-auto pb-2 scrollbar-hide">
                   <code>{post.code}</code>
                 </pre>
               </div>
@@ -230,38 +229,36 @@ const PostCard = ({ post }) => {
           )}
 
           {/* Interaction Bar (Twitter Feature) */}
-          <div className="flex items-center justify-between mt-6 text-foreground/50 z-10 relative">
-            <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center justify-between mt-4 sm:mt-6 gap-y-4 text-foreground/50 z-10 relative">
+            <div className="flex items-center gap-4 sm:gap-6">
               <Link
                 to={`/ticket/${post._id}`}
                 className="flex items-center gap-1.5 group/action hover:text-secondary transition-colors cursor-pointer"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="p-2 rounded-full group-hover/action:bg-secondary/10">
-                  <MessageSquare className="w-5 h-5" />
+                <div className="p-1.5 sm:p-2 rounded-full group-hover/action:bg-secondary/10">
+                  <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
-                <span className="text-sm">{post.commentCount || 0}</span>
+                <span className="text-xs sm:text-sm">{post.commentCount || 0}</span>
               </Link>
 
               <div
                 onClick={(e) => { e.stopPropagation(); toggleLike(post._id); }}
                 className={`flex items-center gap-1.5 group/action transition-colors cursor-pointer ${isLiked ? 'text-purple-500' : 'hover:text-purple-500'}`}
               >
-                <div className={`p-2 rounded-full ${isLiked ? 'bg-pink-500/10' : 'group-hover/action:bg-pink-500/10'}`}>
-                  <Repeat2 className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                <div className={`p-1.5 sm:p-2 rounded-full ${isLiked ? 'bg-pink-500/10' : 'group-hover/action:bg-pink-500/10'}`}>
+                  <Repeat2 className={`w-4 h-4 sm:w-5 sm:h-5 ${isLiked ? 'fill-current' : ''}`} />
                 </div>
-                <span className="text-sm">{likeCount}</span>
+                <span className="text-xs sm:text-sm">{likeCount}</span>
               </div>
-
-
             </div>
 
 
-            <div className="flex items-center gap-3 relative">
+            <div className="flex items-center gap-2 sm:gap-3 relative ml-auto sm:ml-0">
               {post.assignedTo && (
                 <Link
                   to={`/profile/${post.assignedTo.clerkId || post.assignedTo._id}`}
-                  className="text-[10px] font-bold tracking-wider text-blue-400/80 hover:text-blue-400 uppercase transition-colors mr-1"
+                  className="text-[9px] sm:text-[10px] font-bold tracking-wider text-blue-400/80 hover:text-blue-400 uppercase transition-colors mr-1 truncate max-w-[80px] sm:max-w-none"
                   onClick={(e) => e.stopPropagation()}
                 >
                   @{post.assignedTo.username}
@@ -274,10 +271,10 @@ const PostCard = ({ post }) => {
                     e.stopPropagation();
                     if (isDeveloper) setIsStatusMenuOpen(!isStatusMenuOpen);
                   }}
-                  className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
+                  className={`flex items-center gap-1.5 sm:gap-2 bg-white/5 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
                 >
-                  <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
-                  <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
+                  <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
+                  <span className="text-[9px] sm:text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
                     {statusStyle.label}
                   </span>
                 </div>
@@ -395,21 +392,19 @@ const PostCard = ({ post }) => {
 
               <div
                 onClick={handleAskAI}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ${
                   showAiResponse 
                     ? 'bg-white border-white text-black scale-105 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
                     : 'bg-primary/10 border-primary/30 text-primary glow-primary'
                 }`}
               >
-                <Sparkles className={`w-3.5 h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
-                <span className="text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
-                  {showAiResponse ? 'Hide Solution' : (post.aiResponse ? 'View AI Solution' : 'Ask AI')}
+                <Sparkles className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
+                  {showAiResponse ? 'Hide' : (post.aiResponse ? 'AI' : 'Ask AI')}
                 </span>
               </div>
             </div>
           </div>
-
-
           {/* AI Response Card */}
           {showAiResponse && (
             <AIResponseCard 

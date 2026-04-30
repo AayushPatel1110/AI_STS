@@ -32,6 +32,7 @@
   --color-border: var(--color-border);
   --radius-xl: var(--radius-xl);
   --radius-2xl: var(--radius-2xl);
+  --breakpoint-xs: 480px;
 }
 
 @layer base {
