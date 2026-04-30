@@ -24,7 +24,7 @@ export const getStats = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().sort({ createdAt: -1 });
+        const users = await User.find().select("fullname username imageUrl role clerkId email isDeleted createdAt").sort({ createdAt: -1 });
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: "Error fetching users" });
@@ -62,7 +62,7 @@ export const updateUserRole = async (req, res) => {
             return res.status(400).json({ message: "Invalid role" });
         }
 
-        const user = await User.findByIdAndUpdate(userId, { role }, { new: true });
+        const user = await User.findByIdAndUpdate(userId, { role }, { new: true }).select("fullname username imageUrl role clerkId email isDeleted");
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: "Error updating role" });

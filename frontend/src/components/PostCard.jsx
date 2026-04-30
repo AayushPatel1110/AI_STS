@@ -94,7 +94,7 @@ const PostCard = ({ post }) => {
 
   return (
     <Card
-      className="border-b border-border/50 rounded-none bg-transparent hover:bg-white/[0.02] transition-colors group cursor-pointer"
+      className="border-b border-border/50 rounded-none bg-transparent hover:bg-white/[0.02] transition-colors group cursor-pointer overflow-visible"
       onClick={handleCardClick}
     >
       <CardContent className="p-4 flex gap-4">
@@ -230,33 +230,34 @@ const PostCard = ({ post }) => {
           )}
 
           {/* Interaction Bar (Twitter Feature) */}
-          <div className="flex items-center justify-between max-w-md mt-6 text-foreground/50 z-10 relative">
-            <Link
-              to={`/ticket/${post._id}`}
-              className="flex items-center gap-2 group/action hover:text-secondary transition-colors cursor-pointer"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-2 rounded-full group-hover/action:bg-secondary/10">
-                <MessageSquare className="w-5 h-5" />
+          <div className="flex items-center justify-between mt-6 text-foreground/50 z-10 relative">
+            <div className="flex items-center gap-6">
+              <Link
+                to={`/ticket/${post._id}`}
+                className="flex items-center gap-1.5 group/action hover:text-secondary transition-colors cursor-pointer"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="p-2 rounded-full group-hover/action:bg-secondary/10">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <span className="text-sm">{post.commentCount || 0}</span>
+              </Link>
+
+              <div
+                onClick={(e) => { e.stopPropagation(); toggleLike(post._id); }}
+                className={`flex items-center gap-1.5 group/action transition-colors cursor-pointer ${isLiked ? 'text-purple-500' : 'hover:text-purple-500'}`}
+              >
+                <div className={`p-2 rounded-full ${isLiked ? 'bg-pink-500/10' : 'group-hover/action:bg-pink-500/10'}`}>
+                  <Repeat2 className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
+                </div>
+                <span className="text-sm">{likeCount}</span>
               </div>
-              <span className="text-sm">{post.commentCount || 0}</span>
-            </Link>
 
 
-
-
-            <div
-              onClick={(e) => { e.stopPropagation(); toggleLike(post._id); }}
-              className={`flex items-center gap-2 group/action transition-colors cursor-pointer ${isLiked ? 'text-purple-500' : 'hover:text-purple-500'}`}
-            >
-              <div className={`p-2 rounded-full ${isLiked ? 'bg-pink-500/10' : 'group-hover/action:bg-pink-500/10'}`}>
-                <Repeat2 className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} />
-              </div>
-              <span className="text-sm">{likeCount}</span>
             </div>
 
 
-            <div className="flex items-center gap-2 relative">
+            <div className="flex items-center gap-3 relative">
               {post.assignedTo && (
                 <Link
                   to={`/profile/${post.assignedTo.clerkId || post.assignedTo._id}`}
@@ -267,158 +268,147 @@ const PostCard = ({ post }) => {
                 </Link>
               )}
 
-              <div
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (isDeveloper) setIsStatusMenuOpen(!isStatusMenuOpen);
-                }}
-                className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
-              >
-                <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
-                <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
-                  {statusStyle.label}
-                </span>
+              <div className="relative">
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (isDeveloper) setIsStatusMenuOpen(!isStatusMenuOpen);
+                  }}
+                  className={`flex items-center gap-2 bg-white/5 rounded-full px-3 py-1.5 border border-white/5 select-none transition-colors ${isDeveloper ? 'cursor-pointer hover:bg-white/10' : 'cursor-default'}`}
+                >
+                  <div className={`w-2 h-2 rounded-full ${statusStyle.bg} ${statusStyle.shadow}`} />
+                  <span className="text-[10px] font-bold tracking-wider text-foreground/60 uppercase mt-[1px]">
+                    {statusStyle.label}
+                  </span>
+                </div>
+
+                {isDeveloper && isStatusMenuOpen && (
+                  <div
+                    className="absolute right-0 top-full mt-2 flex flex-col gap-1.5 bg-[#0a0a0f] border border-white/10 rounded-xl p-2 shadow-[0_10px_40px_rgba(0,0,0,0.5)] z-[100] min-w-[140px]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {post.status === 'open' && (
+                      <button
+                        onClick={async (e) => { 
+                          e.stopPropagation(); 
+                          try {
+                            await updatePostStatus(post._id, 'in_progress'); 
+                            toast.success("Issue taken successfully!");
+                          } catch (err) {
+                            toast.error("Failed to take issue.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-transparent hover:border-blue-500/20 rounded-lg transition-colors"
+                      >
+                        Take Issue
+                      </button>
+                    )}
+                    {post.status === 'in_progress' && (
+                      <>
+                        <button
+                          onClick={async (e) => { 
+                            e.stopPropagation(); 
+                            try {
+                              await updatePostStatus(post._id, 'resolved'); 
+                              toast.success("Issue marked as resolved!");
+                            } catch (err) {
+                              toast.error("Failed to update status.");
+                            }
+                            setIsStatusMenuOpen(false); 
+                          }}
+                          className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
+                        >
+                          Resolve
+                        </button>
+                        <button
+                          onClick={async (e) => { 
+                            e.stopPropagation(); 
+                            try {
+                              await updatePostStatus(post._id, 'critical'); 
+                              toast.success("Issue marked as critical!");
+                            } catch (err) {
+                              toast.error("Failed to update status.");
+                            }
+                            setIsStatusMenuOpen(false); 
+                          }}
+                          className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
+                        >
+                          Critical
+                        </button>
+                      </>
+                    )}
+                    {post.status === 'critical' && (
+                      <>
+                        <button
+                          onClick={async (e) => { 
+                            e.stopPropagation(); 
+                            try {
+                              await updatePostStatus(post._id, 'resolved'); 
+                              toast.success("Issue marked as resolved!");
+                            } catch (err) {
+                              toast.error("Failed to update status.");
+                            }
+                            setIsStatusMenuOpen(false); 
+                          }}
+                          className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
+                        >
+                          Resolve
+                        </button>
+                        <button
+                          onClick={async (e) => { 
+                            e.stopPropagation(); 
+                            try {
+                              await updatePostStatus(post._id, 'in_progress'); 
+                              toast.success("Status set back to In Progress.");
+                            } catch (err) {
+                              toast.error("Failed to update status.");
+                            }
+                            setIsStatusMenuOpen(false); 
+                          }}
+                          className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border border-transparent hover:border-yellow-500/20 rounded-lg transition-colors"
+                        >
+                          In Progress
+                        </button>
+                      </>
+                    )}
+                    {post.status === 'resolved' && (
+                      <button
+                        onClick={async (e) => { 
+                          e.stopPropagation(); 
+                          try {
+                            await updatePostStatus(post._id, 'in_progress'); 
+                            toast.success("Status set back to In Progress.");
+                          } catch (err) {
+                            toast.error("Failed to update status.");
+                          }
+                          setIsStatusMenuOpen(false); 
+                        }}
+                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border border-transparent hover:border-yellow-500/20 rounded-lg transition-colors"
+                      >
+                        In Progress
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
 
-            <div
-              onClick={handleAskAI}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ml-2 ${
-                showAiResponse 
-                  ? 'bg-primary/50 border-primary text-white shadow-[0_0_20px_rgba(139,92,246,0.5)] scale-105' 
-                  : 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20 glow-primary'
-              }`}
-            >
+              <div
+                onClick={handleAskAI}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 cursor-pointer select-none ${
+                  showAiResponse 
+                    ? 'bg-white border-white text-black scale-105 shadow-[0_0_20px_rgba(255,255,255,0.4)]' 
+                    : 'bg-primary/10 border-primary/30 text-primary glow-primary'
+                }`}
+              >
                 <Sparkles className={`w-3.5 h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
                 <span className="text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
                   {showAiResponse ? 'Hide Solution' : (post.aiResponse ? 'View AI Solution' : 'Ask AI')}
                 </span>
               </div>
-
-              {isDeveloper && isStatusMenuOpen && (
-                <div
-                  className="absolute left-full top-1/2 -translate-y-1/2 ml-2 flex flex-col gap-1.5 bg-card border border-border/50 rounded-xl p-2 shadow-2xl z-50 min-w-[120px]"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {post.status === 'open' && (
-                    <button
-                      onClick={async (e) => { 
-                        e.stopPropagation(); 
-                        try {
-                          await updatePostStatus(post._id, 'in_progress'); 
-                          toast.success("Issue taken successfully!");
-                        } catch (err) {
-                          toast.error("Failed to take issue.");
-                        }
-                        setIsStatusMenuOpen(false); 
-                      }}
-                      className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-transparent hover:border-blue-500/20 rounded-lg transition-colors"
-                    >
-                      Take Issue
-                    </button>
-                  )}
-                  {post.status === 'in_progress' && (
-                    <>
-                      <button
-                        onClick={async (e) => { 
-                          e.stopPropagation(); 
-                          try {
-                            await updatePostStatus(post._id, 'resolved'); 
-                            toast.success("Issue marked as resolved!");
-                          } catch (err) {
-                            toast.error("Failed to update status.");
-                          }
-                          setIsStatusMenuOpen(false); 
-                        }}
-                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
-                      >
-                        Resolve
-                      </button>
-                      <button
-                        onClick={async (e) => { 
-                          e.stopPropagation(); 
-                          try {
-                            await updatePostStatus(post._id, 'critical'); 
-                            toast.success("Issue marked as critical!");
-                          } catch (err) {
-                            toast.error("Failed to update status.");
-                          }
-                          setIsStatusMenuOpen(false); 
-                        }}
-                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
-                      >
-                        Critical
-                      </button>
-                    </>
-                  )}
-                  {post.status === 'resolved' && (
-                    <>
-                      <button
-                        onClick={async () => { 
-                          try {
-                            await updatePostStatus(post._id, 'resolved'); 
-                            toast.success("Issue marked as resolved!");
-                          } catch (err) {
-                            toast.error("Failed to update status.");
-                          }
-                          setIsStatusMenuOpen(false); 
-                        }}
-                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
-                      >
-                        Resolve
-                      </button>
-                      <button
-                        onClick={async () => { 
-                          try {
-                            await updatePostStatus(post._id, 'critical'); 
-                            toast.success("Issue marked as critical!");
-                          } catch (err) {
-                            toast.error("Failed to update status.");
-                          }
-                          setIsStatusMenuOpen(false); 
-                        }}
-                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
-                      >
-                        Critical
-                      </button>
-                    </>
-                  )}
-                  {post.status === 'critical' && (
-                    <>
-                      <button
-                        onClick={async () => { 
-                          try {
-                            await updatePostStatus(post._id, 'resolved'); 
-                            toast.success("Issue marked as resolved!");
-                          } catch (err) {
-                            toast.error("Failed to update status.");
-                          }
-                          setIsStatusMenuOpen(false); 
-                        }}
-                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-transparent hover:border-green-500/20 rounded-lg transition-colors"
-                      >
-                        Resolve
-                      </button>
-                      <button
-                        onClick={async () => { 
-                          try {
-                            await updatePostStatus(post._id, 'critical'); 
-                            toast.success("Issue marked as critical!");
-                          } catch (err) {
-                            toast.error("Failed to update status.");
-                          }
-                          setIsStatusMenuOpen(false); 
-                        }}
-                        className="w-full text-left px-3 py-2 text-[10px] uppercase tracking-wider font-bold bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-transparent hover:border-red-500/20 rounded-lg transition-colors"
-                      >
-                        Critical
-                      </button>
-                    </>
-                  )}
-
-                </div>
-              )}
             </div>
           </div>
+
 
           {/* AI Response Card */}
           {showAiResponse && (

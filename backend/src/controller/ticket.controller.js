@@ -8,15 +8,18 @@ import { Notification } from "../models/notification.model.js";
 export const getAllTickets = async (req, res) => {
     try {
         const ticketsData = await Ticket.find()
-            .populate("userId", "fullname imageUrl clerkId role username isDeleted")
-            .populate("assignedTo", "fullname imageUrl clerkId role username")
+            .populate("userId", "fullname imageUrl clerkId role username isDeleted -_id")
+            .populate("assignedTo", "fullname imageUrl clerkId role username -_id")
             .sort({ createdAt: -1 });
 
         const tickets = ticketsData.filter(ticket => ticket.userId && !ticket.userId.isDeleted);
 
         const ticketsWithCounts = await Promise.all(tickets.map(async (ticket) => {
             const commentCount = await Comment.countDocuments({ ticketId: ticket._id });
-            return { ...ticket.toObject(), commentCount };
+            const ticketObj = ticket.toObject();
+            // Remove isDeleted before sending to client
+            if (ticketObj.userId) delete ticketObj.userId.isDeleted;
+            return { ...ticketObj, commentCount };
         }));
 
         res.status(200).json(ticketsWithCounts);
@@ -31,8 +34,8 @@ export const getTicketById = async (req, res) => {
     try {
         const { id } = req.params;
         const ticket = await Ticket.findById(id)
-            .populate("userId", "fullname imageUrl clerkId role username")
-            .populate("assignedTo", "fullname imageUrl clerkId role username");
+            .populate("userId", "fullname imageUrl clerkId role username -_id")
+            .populate("assignedTo", "fullname imageUrl clerkId role username -_id");
         
         if (!ticket) return res.status(404).json({ message: "Ticket not found" });
         

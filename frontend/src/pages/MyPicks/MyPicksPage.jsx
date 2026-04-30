@@ -23,10 +23,7 @@ const MyPicksPage = () => {
 
   // Filter posts where the authUser is assigned to the ticket
   let displayedTickets = posts.filter((post) =>
-    post.assignedTo && (
-      post.assignedTo._id === authUser?._id ||
-      post.assignedTo.clerkId === authUser?.clerkId
-    )
+    post.assignedTo && post.assignedTo.clerkId === authUser?.clerkId
   );
 
   // Apply status filter

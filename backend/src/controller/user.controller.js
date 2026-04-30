@@ -3,7 +3,10 @@ import { User } from "../models/user.model.js";
 export const getUsers = async (req, res) => {
   const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
   const currentUserId = authState?.userId;
-  const users = await User.find({ clerkId: { $ne: currentUserId } });
+  const users = await User.find({ 
+    clerkId: { $ne: currentUserId },
+    isDeleted: { $ne: true }
+  }).select("fullname imageUrl username bio clerkId role -_id");
   res.json(users);
 };
 
@@ -28,11 +31,12 @@ export const getUserProfile = async (req, res) => {
   const { id } = req.params;
   try {
     // Try clerkId first
-    let user = await User.findOne({ clerkId: id });
+    let user = await User.findOne({ clerkId: id, isDeleted: { $ne: true } }).select("fullname imageUrl username bio clerkId role -_id");
     
     // If not found, try MongoDB ObjectId
     if (!user && id.match(/^[0-9a-fA-F]{24}$/)) {
-      user = await User.findById(id);
+      user = await User.findById(id).select("fullname imageUrl username bio clerkId role -_id");
+      if (user && user.isDeleted) user = null;
     }
 
     if (!user) {

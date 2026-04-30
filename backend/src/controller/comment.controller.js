@@ -32,7 +32,7 @@ export const createComment = async (req, res) => {
         await newComment.save();
 
         // Populate user info for the response
-        const populatedComment = await Comment.findById(newComment._id).populate("userId", "fullname username imageUrl role clerkId");
+        const populatedComment = await Comment.findById(newComment._id).populate("userId", "fullname username imageUrl role clerkId -_id");
 
         // Notification logic for Ticket Author
         if (ticket.userId.toString() !== user._id.toString()) {
@@ -56,7 +56,7 @@ export const getCommentsByTicket = async (req, res) => {
     try {
         const { ticketId } = req.params;
         const comments = await Comment.find({ ticketId })
-            .populate("userId", "fullname username imageUrl role clerkId")
+            .populate("userId", "fullname username imageUrl role clerkId -_id")
             .sort({ createdAt: -1 });
 
         res.status(200).json(comments);

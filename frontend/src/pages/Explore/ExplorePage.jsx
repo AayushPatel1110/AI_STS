@@ -144,7 +144,7 @@ const ExplorePage = () => {
                 <div className="grid grid-cols-1  gap-4">
                   {filteredUsers.length > 0 ? (
                     filteredUsers.map((user) => (
-                      <UserCard key={user._id} user={user} />
+                      <UserCard key={user.clerkId} user={user} />
                     ))
                   ) : (
                     <div className="col-span-full">
