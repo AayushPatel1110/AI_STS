@@ -400,7 +400,7 @@ const PostCard = ({ post }) => {
               >
                 <Sparkles className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${showAiResponse ? 'fill-current' : ''}`} />
                 <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mt-[0.5px]">
-                  {showAiResponse ? 'Hide' : (post.aiResponse ? 'AI' : 'Ask AI')}
+                  {showAiResponse ? 'Hide' : (post.aiResponse ? 'AI Answer' : 'Ask AI')}
                 </span>
               </div>
             </div>

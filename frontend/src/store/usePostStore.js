@@ -171,5 +171,21 @@ export const usePostStore = create((set, get) => ({
         } catch (error) {
             console.error("Error toggling comment author like:", error);
         }
+    },
+
+    setAiResponse: async (postId, aiResponse) => {
+        try {
+            const response = await axiosInstance.patch(`tickets/${postId}/ai-response`, { aiResponse });
+            const updatedAiResponse = response.data.aiResponse;
+            set((state) => ({
+                posts: state.posts.map((post) => post._id === postId ? { ...post, aiResponse: updatedAiResponse } : post),
+                profilePosts: state.profilePosts.map((post) => post._id === postId ? { ...post, aiResponse: updatedAiResponse } : post),
+                currentPost: state.currentPost?._id === postId ? { ...state.currentPost, aiResponse: updatedAiResponse } : state.currentPost
+            }));
+            return updatedAiResponse;
+        } catch (error) {
+            console.error("Error setting AI response:", error);
+            throw error;
+        }
     }
 }));

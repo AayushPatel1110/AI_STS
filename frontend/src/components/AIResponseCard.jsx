@@ -6,7 +6,7 @@ import { Bot, Sparkles, Loader2, RefreshCcw, CheckCircle } from 'lucide-react';
 import { aiModel } from '@/lib/gemini';
 import { groq } from '@/lib/groq';
 import toast from 'react-hot-toast';
-import axios from 'axios';
+import { usePostStore } from '@/store/usePostStore';
 
 const AIResponseCard = ({ title, description, code, ticketId, savedResponse, onComplete }) => {
   const [aiResponse, setAiResponse] = useState("");
@@ -16,9 +16,20 @@ const AIResponseCard = ({ title, description, code, ticketId, savedResponse, onC
   const [refreshKey, setRefreshKey] = useState(0);
   const [error, setError] = useState(null);
 
-  const handleRegenerate = () => {
+  const { setAiResponse: updateStoreAiResponse } = usePostStore();
+
+  const handleRegenerate = async () => {
     setAiResponse("");
     setRefreshKey(prev => prev + 1);
+    
+    // If we're regenerating, we should clear the previously accepted response from the DB
+    if (ticketId && savedResponse) {
+      try {
+        await updateStoreAiResponse(ticketId, "");
+      } catch (err) {
+        console.error("Failed to clear old AI response during regeneration:", err);
+      }
+    }
   };
 
   const handleAccept = async () => {
@@ -26,15 +37,8 @@ const AIResponseCard = ({ title, description, code, ticketId, savedResponse, onC
 
     setIsSaving(true);
     try {
-      const response = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/tickets/${ticketId}/ai-response`,
-        { aiResponse },
-        { withCredentials: true }
-      );
-
-      if (response.status === 200) {
-        toast.success("AI Solution accepted and saved!");
-      }
+      await updateStoreAiResponse(ticketId, aiResponse);
+      toast.success("AI Solution accepted and saved!");
     } catch (err) {
       console.error("Failed to save AI response:", err);
       toast.error("Failed to save AI solution.");
