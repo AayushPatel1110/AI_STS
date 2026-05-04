@@ -18,7 +18,7 @@ const messageSchema = new mongoose.Schema({
     ticketId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Ticket",
-        required: true,
+        required: false,
     },
 }, { timestamps: true }
 );      

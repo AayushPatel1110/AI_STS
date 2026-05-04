@@ -43,3 +43,28 @@ export const markAsRead = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+
+// @desc    Mark notifications from a specific sender as read
+// @route   PATCH /api/notifications/mark-read/:senderId
+export const markSenderAsRead = async (req, res) => {
+    try {
+        const { senderId } = req.params;
+        const authState = typeof req.auth === 'function' ? req.auth() : req.auth;
+        const clerkId = authState?.userId;
+        const user = await User.findOne({ clerkId });
+        
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        const sender = await User.findOne({ clerkId: senderId });
+        if (!sender) return res.status(404).json({ message: "Sender not found" });
+
+        await Notification.updateMany(
+            { recipientId: user._id, senderId: sender._id, type: "message", read: false },
+            { $set: { read: true } }
+        );
+
+        res.status(200).json({ message: "Notifications from sender marked as read" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};

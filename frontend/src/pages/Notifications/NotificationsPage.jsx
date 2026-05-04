@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import MainLayout from '@/components/MainLayout';
 import TopBar from '@/components/TopBar';
-import { Bell, Repeat, MessageCircle, Activity, Loader2, CheckCircle2 } from 'lucide-react';
+import { Bell, Repeat, MessageCircle, Activity, Loader2, CheckCircle2, Send } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useNotificationStore } from '@/store/useNotificationStore';
 import { formatRelativeTime } from '@/lib/utils';
@@ -80,6 +80,8 @@ const NotificationItem = ({ notification }) => {
         return { icon: MessageCircle, color: 'text-blue-500', bg: 'bg-blue-500/10' };
       case 'status_update':
         return { icon: Activity, color: 'text-primary', bg: 'bg-primary/10' };
+      case 'message':
+        return { icon: Send, color: 'text-purple-500', bg: 'bg-purple-500/10' };
       default:
         return { icon: Bell, color: 'text-zinc-400', bg: 'bg-white/5' };
     }
@@ -87,7 +89,7 @@ const NotificationItem = ({ notification }) => {
 
   const { icon: Icon, color, bg } = getIconAndColor(notification.type);
   const sender = notification.senderId;
-  const linkTo = notification.ticketId ? `/ticket/${notification.ticketId._id}` : `/profile/${sender?.clerkId}`;
+  const linkTo = notification.type === 'message' ? '/messages' : (notification.ticketId ? `/ticket/${notification.ticketId._id}` : `/profile/${sender?.clerkId}`);
 
   return (
     <Link to={linkTo} className={`p-6 hover:bg-white/5 transition-colors cursor-pointer flex gap-4 items-start group ${isUnread ? 'bg-primary/5' : ''}`}>
