@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import MainLayout from '@/components/MainLayout';
 import TopBar from '@/components/TopBar';
-import { Search, Send, Loader2, X } from 'lucide-react';
+import { Search, Send, Loader2, X, ArrowLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -72,9 +72,11 @@ const MessagesPage = () => {
     <div className="min-h-screen bg-background text-foreground">
       <TopBar />
       <MainLayout>
-        <div className="flex h-[calc(100vh-64px)] overflow-hidden max-w-7xl mx-auto w-full">
+        <div className="flex h-[calc(100vh-64px)] overflow-hidden max-w-7xl mx-auto w-full relative">
           {/* Contacts List */}
-          <div className="w-1/3 max-w-[400px] min-w-[300px] border-r border-border/50 flex flex-col bg-background/50 backdrop-blur-sm z-10">
+          <div className={`border-r border-border/50 flex-col bg-background/50 backdrop-blur-sm z-10 
+            ${selectedUser ? 'hidden md:flex' : 'flex'} 
+            w-full md:w-1/3 md:max-w-[400px] md:min-w-[300px]`}>
             {/* Search Bar */}
             <div className="p-6 pb-2">
               <h1 className="text-2xl font-bold mb-6">Messages</h1>
@@ -126,10 +128,16 @@ const MessagesPage = () => {
           </div>
 
           {/* Chat Window */}
-          <div className="flex-1 flex flex-col bg-card/5 relative">
+          <div className={`flex-1 flex-col bg-card/5 relative ${!selectedUser ? 'hidden md:flex' : 'flex'}`}>
             {selectedUser && (
-              <div className="h-[88px] border-b border-border/50 flex items-center px-8 bg-background/80 backdrop-blur-md sticky top-0 z-10">
-                <div className="flex items-center gap-4">
+              <div className="h-[88px] border-b border-border/50 flex items-center px-4 md:px-8 bg-background/80 backdrop-blur-md sticky top-0 z-10 gap-3">
+                <button 
+                  onClick={() => setSelectedUser(null)}
+                  className="md:hidden p-2 -ml-2 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  <ArrowLeft className="w-6 h-6" />
+                </button>
+                <div className="flex items-center gap-3 md:gap-4">
                   <div className="relative">
                     <Avatar className="w-12 h-12 border-2 border-primary/20">
                       <AvatarImage src={selectedUser.imageUrl} />
@@ -191,10 +199,10 @@ const MessagesPage = () => {
 
             {/* Input Area */}
             {selectedUser && (
-              <div className="absolute bottom-0 w-full p-6 bg-background/90 backdrop-blur-md border-t border-border/50 z-10">
-                <div className="flex gap-4 max-w-5xl mx-auto items-center">
+              <div className="absolute bottom-0 w-full p-4 md:p-6 bg-background/90 backdrop-blur-md border-t border-border/50 z-10">
+                <div className="flex gap-3 md:gap-4 max-w-5xl mx-auto items-center">
                   <Input
-                    className="flex-1 bg-white/5 border-white/10 focus-visible:ring-primary h-14 rounded-2xl px-6 text-base"
+                    className="flex-1 bg-white/5 border-white/10 focus-visible:ring-primary h-12 md:h-14 rounded-xl md:rounded-2xl px-4 md:px-6 text-sm md:text-base"
                     placeholder="Type your message..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
@@ -203,9 +211,9 @@ const MessagesPage = () => {
                   <Button
                     onClick={handleSend}
                     disabled={!newMessage.trim() || !selectedUser}
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground w-14 h-14 rounded-2xl flex items-center justify-center p-0 transition-transform active:scale-95"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground w-12 h-12 md:w-14 md:h-14 rounded-xl md:rounded-2xl flex items-center justify-center p-0 transition-transform active:scale-95"
                   >
-                    <Send className="w-6 h-6 ml-1" />
+                    <Send className="w-5 h-5 md:w-6 md:h-6 ml-1" />
                   </Button>
                 </div>
               </div>
