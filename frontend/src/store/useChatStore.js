@@ -4,28 +4,40 @@ import { io } from "socket.io-client";
 import toast from "react-hot-toast";
 
 const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000/api";
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
+// Auto-derive socket URL from backend URL (strips /api suffix).
+// This way only VITE_BACKEND_URL needs to be set in Vercel dashboard.
+const SOCKET_URL =
+    import.meta.env.VITE_SOCKET_URL ||
+    (import.meta.env.VITE_BACKEND_URL
+        ? import.meta.env.VITE_BACKEND_URL.replace(/\/api\/?$/, "").replace(/\/$/, "")
+        : "http://localhost:5000");
 
-const playNotificationSound = () => {
+const playNotificationSound = async () => {
     try {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) return;
-        const ctx = new AudioContext();
-        
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        const ctx = new AudioContextClass();
+
+        // Browsers suspend AudioContext until a user gesture occurs.
+        // On Vercel (production) this causes silent failures — resume it explicitly.
+        if (ctx.state === "suspended") {
+            await ctx.resume();
+        }
+
         const osc = ctx.createOscillator();
         const gainNode = ctx.createGain();
-        
+
         osc.type = 'sine';
         osc.frequency.setValueAtTime(800, ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1);
-        
+
         gainNode.gain.setValueAtTime(0, ctx.currentTime);
         gainNode.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.02);
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1);
-        
+
         osc.connect(gainNode);
         gainNode.connect(ctx.destination);
-        
+
         osc.start();
         osc.stop(ctx.currentTime + 0.15);
     } catch (error) {
@@ -45,6 +57,14 @@ export const useChatStore = create((set, get) => ({
 
         const socket = io(SOCKET_URL, {
             query: { userId },
+            // Must specify transports explicitly for Render (cloud WebSocket hosting).
+            // 'websocket' first for speed; 'polling' as fallback if WS is blocked.
+            transports: ["websocket", "polling"],
+            withCredentials: true,
+            reconnection: true,
+            reconnectionAttempts: 10,
+            reconnectionDelay: 1500,
+            timeout: 20000,
         });
         socket.connect();
 

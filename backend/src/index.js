@@ -18,7 +18,9 @@ const app = express();
 const httpServer = initializeSocket(app);
 
 app.use(cors({
-  origin: true,
+  origin: process.env.FRONTEND_URL
+    ? [process.env.FRONTEND_URL, 'http://localhost:5173', 'http://localhost:5174']
+    : true, // allow all in dev; set FRONTEND_URL in Render for production
   credentials: true,
 }));
 
