@@ -28,7 +28,7 @@ const MainLayout = ({ children }) => {
     }
   };
   return (
-    <div className="flex bg-background overflow-hidden max-w-7xl h-[calc(100vh-4rem)] mx-auto border-x border-border/50 relative">
+    <div className="flex bg-background overflow-hidden max-w-7xl h-[calc(100dvh-4rem)] mx-auto border-x border-border/50 relative">
       {/* Sidebar - Fixed Left */}
       <aside className="hidden md:flex flex-col w-20 xl:w-72 border-r border-border/50">
         <Sidebar />
