@@ -6,7 +6,7 @@ import { usePostStore } from '@/store/usePostStore';
 import { Link } from 'react-router-dom';
 import { formatRelativeTime } from '@/lib/utils';
 
-const MainLayout = ({ children }) => {
+const MainLayout = ({ children, noScroll = false }) => {
   const { posts, setStatusFilter, statusFilter, fetchPosts } = usePostStore();
 
   React.useEffect(() => {
@@ -35,10 +35,16 @@ const MainLayout = ({ children }) => {
       </aside>
 
       {/* Main Feed - Scrollable Middle */}
-      <main className="flex-1 flex flex-col min-w-0 border-r border-border/50 pb-20 md:pb-0">
-        <ScrollArea className="flex-1 scrollbar-hide">
-          {children}
-        </ScrollArea>
+      <main className="flex-1 flex flex-col min-w-0 border-r border-border/50 pb-20 md:pb-0 relative overflow-hidden">
+        {noScroll ? (
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            {children}
+          </div>
+        ) : (
+          <ScrollArea className="flex-1 scrollbar-hide">
+            {children}
+          </ScrollArea>
+        )}
       </main>
 
       {/* Widgets - Fixed Right */}

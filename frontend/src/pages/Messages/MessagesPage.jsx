@@ -96,8 +96,8 @@ const MessagesPage = () => {
     <div className="fixed inset-0 bg-[#0a0a0f] text-foreground flex flex-col overflow-hidden">
       <TopBar />
       <div className="flex-1 relative overflow-hidden">
-        <MainLayout>
-          <div className="flex h-[calc(100dvh-64px)] overflow-hidden max-w-7xl mx-auto w-full relative">
+        <MainLayout noScroll={true}>
+          <div className="flex h-full overflow-hidden max-w-7xl mx-auto w-full relative">
             {/* Contacts List */}
             <div className={`border-r border-white/5 flex-col bg-[#0d0d14]/40 backdrop-blur-xl z-20 
               ${selectedUser ? 'hidden md:flex' : 'flex'} 
