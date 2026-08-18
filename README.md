@@ -149,7 +149,7 @@ The app will be running at `http://localhost:5173`.
 
 | Role | Capabilities |
 |---|---|
-| **Reporter** | Create tickets, comment, message developers, react to posts |
+| **Reporter/QA** | Create tickets, comment, message developers, react to posts |
 | **Developer** | All reporter actions + pick up tickets, update status, MyPicks queue |
 | **Admin** | All developer actions + user management, role assignment, platform analytics |
 
