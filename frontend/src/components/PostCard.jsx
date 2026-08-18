@@ -33,6 +33,7 @@ const PostCard = ({ post }) => {
 
   // AI State
   const [showAiResponse, setShowAiResponse] = useState(false);
+  const [cachedAiResponse, setCachedAiResponse] = useState(null);
 
   const isOwner = currentUser?.id && post.userId?.clerkId && currentUser.id === post.userId.clerkId;
   const isDeveloper = authUser?.role === 'developer' || authUser?.role === 'admin';
@@ -412,7 +413,8 @@ const PostCard = ({ post }) => {
               description={post.description} 
               code={post.code} 
               ticketId={post._id}
-              savedResponse={post.aiResponse}
+              savedResponse={post.aiResponse || cachedAiResponse}
+              onComplete={(text) => setCachedAiResponse(text)}
             />
           )}
         </div>

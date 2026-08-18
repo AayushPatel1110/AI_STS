@@ -23,6 +23,7 @@ const TicketDetailPage = () => {
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isCodeExpanded, setIsCodeExpanded] = useState(false);
   const [showAiResponse, setShowAiResponse] = useState(false);
+  const [cachedAiResponse, setCachedAiResponse] = useState(null);
 
   const isDeveloper = authUser?.role === 'developer' || authUser?.role === 'admin';
   const isOwner = currentPost?.userId?._id === authUser?._id || currentPost?.userId?.clerkId === authUser?.clerkId;
@@ -274,7 +275,8 @@ const TicketDetailPage = () => {
                 description={currentPost.description} 
                 code={currentPost.code} 
                 ticketId={currentPost._id}
-                savedResponse={currentPost.aiResponse}
+                savedResponse={currentPost.aiResponse || cachedAiResponse}
+                onComplete={(text) => setCachedAiResponse(text)}
               />
             )}
           </div>

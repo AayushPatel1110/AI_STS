@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Bot, Sparkles, Loader2, RefreshCcw, CheckCircle } from 'lucide-react';
+import { Bot, Sparkles, Loader2, RefreshCcw, CheckCircle, LogIn, X } from 'lucide-react';
 import { aiModel } from '@/lib/gemini';
 import { groq } from '@/lib/groq';
 import toast from 'react-hot-toast';
 import { usePostStore } from '@/store/usePostStore';
+import { useAuth, SignInButton } from '@clerk/clerk-react';
 
 const AIResponseCard = ({ title, description, code, ticketId, savedResponse, onComplete }) => {
+  const { isSignedIn } = useAuth();
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [aiResponse, setAiResponse] = useState("");
   const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [activeModelName, setActiveModelName] = useState("");
@@ -19,6 +22,10 @@ const AIResponseCard = ({ title, description, code, ticketId, savedResponse, onC
   const { setAiResponse: updateStoreAiResponse } = usePostStore();
 
   const handleRegenerate = async () => {
+    if (!isSignedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
     setAiResponse("");
     setRefreshKey(prev => prev + 1);
     
@@ -33,6 +40,10 @@ const AIResponseCard = ({ title, description, code, ticketId, savedResponse, onC
   };
 
   const handleAccept = async () => {
+    if (!isSignedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
     if (!ticketId || !aiResponse) return;
 
     setIsSaving(true);
@@ -269,28 +280,57 @@ Requirements:
       </div>
 
       {!isAiGenerating && aiResponse && (
-        <div className="px-5 py-4 bg-primary/5 border-t border-white/5 flex justify-end items-center gap-3">
-          <button
-            onClick={handleRegenerate}
-            disabled={isSaving}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-[10px] text-white/60 font-bold uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 group"
-          >
-            <RefreshCcw className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
-            Regenerate
-          </button>
+        <div className="px-5 py-4 bg-primary/5 border-t border-white/5 flex flex-col gap-3">
+          {/* Login prompt banner */}
+          {showLoginPrompt && (
+            <div className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-xl bg-primary/10 border border-primary/30 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-2">
+                <LogIn className="w-3.5 h-3.5 text-primary shrink-0" />
+                <span className="text-[11px] text-foreground/80 font-medium">
+                  Sign in to regenerate or save AI solutions
+                </span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <SignInButton mode="modal" forceRedirectUrl={window.location.pathname}>
+                  <button className="px-2.5 py-1 rounded-lg bg-primary text-black text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 transition-colors active:scale-95">
+                    Sign In
+                  </button>
+                </SignInButton>
+                <button
+                  onClick={() => setShowLoginPrompt(false)}
+                  className="text-foreground/40 hover:text-foreground/70 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
 
-          <button
-            onClick={handleAccept}
-            disabled={isSaving}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 hover:bg-primary/30 hover:border-primary/50 text-[10px] text-primary font-bold uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 group"
-          >
-            {isSaving ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <CheckCircle className={`w-3 h-3 ${isSaving ? '' : 'group-hover:fill-primary/20'}`} />
-            )}
-            <span>{isSaving ? "SAVING..." : "Accept Solution"}</span>
-          </button>
+          <div className="flex justify-end items-center gap-3">
+            <button
+              onClick={handleRegenerate}
+              disabled={isSaving}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 text-[10px] text-white/60 font-bold uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 group"
+            >
+              <RefreshCcw className="w-3 h-3 group-hover:rotate-180 transition-transform duration-500" />
+              Regenerate
+              {!isSignedIn && <LogIn className="w-2.5 h-2.5 opacity-50" />}
+            </button>
+
+            <button
+              onClick={handleAccept}
+              disabled={isSaving}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/30 hover:bg-primary/30 hover:border-primary/50 text-[10px] text-primary font-bold uppercase tracking-widest transition-all duration-300 active:scale-95 disabled:opacity-50 group"
+            >
+              {isSaving ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <CheckCircle className={`w-3 h-3 ${isSaving ? '' : 'group-hover:fill-primary/20'}`} />
+              )}
+              <span>{isSaving ? "SAVING..." : "Accept Solution"}</span>
+              {!isSignedIn && !isSaving && <LogIn className="w-2.5 h-2.5 opacity-50" />}
+            </button>
+          </div>
         </div>
       )}
     </div>
