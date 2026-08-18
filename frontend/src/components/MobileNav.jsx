@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Compass, Bell, Mail, User, Briefcase, Shield } from 'lucide-react';
+import { Home, Compass, Bell, Mail, User, Briefcase, Shield, Info } from 'lucide-react';
 import { useUserStore } from '@/store/useUserStore';
 import { useNotificationStore } from '@/store/useNotificationStore';
 
@@ -15,7 +15,8 @@ const MobileNav = () => {
       { icon: Bell, path: '/notifications', label: 'Alerts', showBadge: unreadCount > 0 },
       { icon: Mail, path: '/messages', label: 'Inbox' },
       { icon: User, path: '/profile', label: 'Profile' }
-    ] : [])
+    ] : []),
+    { icon: Info, path: '/about', label: 'About' },
   ];
 
   let items = [...baseItems];

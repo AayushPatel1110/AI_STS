@@ -11,6 +11,7 @@ import AuthCallbackPage from './pages/auth-callback/AuthCallbackPage';
 import SSOCallbackPage from './pages/auth-callback/SSOCallbackPage';
 import MyPicksPage from './pages/MyPicks/MyPicksPage';
 import AdminPage from './pages/Admin/AdminPage';
+import AboutPage from './pages/About/AboutPage';
 import { AuthenticateWithRedirectCallback } from '@clerk/clerk-react';
 
 import AuthSync from './components/AuthSync';
@@ -39,6 +40,7 @@ function App() {
         <Route path='/ticket/:id' element={<TicketDetailPage />} />
         <Route path='/mypicks' element={<MyPicksPage />} />
         <Route path='/admin' element={<AdminPage />} />
+        <Route path='/about' element={<AboutPage />} />
         
         <Route path='/sso-callback' element={<SSOCallbackPage />} />
         <Route path='/auth-callback' element={<AuthCallbackPage />} />

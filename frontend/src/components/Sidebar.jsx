@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Compass, Bell, Mail, User, PlusCircle, Briefcase, Shield } from 'lucide-react';
+import { Home, Compass, Bell, Mail, User, PlusCircle, Briefcase, Shield, Info } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@clerk/clerk-react';
@@ -12,6 +12,7 @@ const navItems = [
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: Mail, label: 'Messages', path: '/messages' },
   { icon: User, label: 'Profile', path: '/profile' },
+  { icon: Info, label: 'About', path: '/about' },
 ];
 
 const Sidebar = () => {
